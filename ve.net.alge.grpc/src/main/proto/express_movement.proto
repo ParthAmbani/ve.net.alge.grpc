@@ -1,0 +1,193 @@
+/************************************************************************************
+ * Copyright (C) 2018-present E.R.P. Consultores y Asociados, C.A.                  *
+ * Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com                     *
+ * This program is free software: you can redistribute it and/or modify             *
+ * it under the terms of the GNU General Public License as published by             *
+ * the Free Software Foundation, either version 2 of the License, or                *
+ * (at your option) any later version.                                              *
+ * This program is distributed in the hope that it will be useful,                  *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                   *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                     *
+ * GNU General Public License for more details.                                     *
+ * You should have received a copy of the GNU General Public License                *
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.            *
+ ************************************************************************************/
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.spin.backend.grpc.form.express_movement";
+option java_outer_classname = "ADempiereExpressMovement";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+package express_movement;
+
+service ExpressMovement {
+	rpc ListWarehouses(ListWarehousesRequest) returns (ListWarehousesResponse) {
+		option (google.api.http) = { get: "/express-movement/warehouses" };
+	}
+	rpc ListProducts(ListProductsRequest) returns (ListProductsResponse) {
+		option (google.api.http) = { get: "/express-movement/products" };
+	}
+	// Movement
+	rpc CreateMovement(CreateMovementRequest) returns (Movement) {
+		option (google.api.http) = {
+			post: "/express-movement/movements",
+			body: "*"
+		};
+	}
+	rpc DeleteMovement(DeleteMovementRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = { delete: "/express-movement/movements/{id}" };
+	}
+	rpc ProcessMovement(ProcessMovementRequest) returns (Movement) {
+		option (google.api.http) = {
+			post: "/express-movement/movements/{id}/process",
+			body: "*"
+		};
+	}
+	//	Movement Line
+	rpc CreateMovementLine(CreateMovementLineRequest) returns (MovementLine) {
+		option (google.api.http) = {
+			post: "/express-movement/movements/{movement_id}/lines",
+			body: "*"
+		};
+	}
+	rpc DeleteMovementLine(DeleteMovementLineRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = { delete: "/express-movement/movement/{movement_id}/lines/{id}" };
+	}
+	rpc UpdateMovementLine(UpdateMovementLineRequest) returns (MovementLine) {
+		option (google.api.http) = {
+			patch: "/express-movement/movement/{movement_id}/lines/{id}",
+			body: "*"
+		};
+	}
+	rpc ListMovementLines(ListMovementLinesRequest) returns (ListMovementLinesResponse) {
+		option (google.api.http) = { get: "/express-movement/{movement_id}/movements/lines" };
+	}
+}
+
+
+// Warehouse
+message Warehouse {
+	int32 id = 1;
+	string value = 2;
+	string name = 3;
+	string description = 4;
+}
+
+message ListWarehousesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+}
+
+message ListWarehousesResponse {
+	int64 record_count = 1;
+	repeated Warehouse records = 2;
+	string next_page_token = 3;
+}
+
+
+// Product
+message ListProductsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+}
+
+message Product {
+	int32 id = 1;
+	string upc = 2;
+	string sku = 3;
+	string value = 4;
+	string name = 5;
+	string description = 6;
+}
+
+message ListProductsResponse {
+	int64 record_count = 1;
+	repeated Product records = 2;
+	string next_page_token = 3;
+}
+
+
+// Movement
+message CreateMovementRequest {
+}
+
+message Movement {
+	int32 id = 1;
+	string document_no = 2;
+	google.protobuf.Timestamp movement_date = 3;
+	string description = 4;
+	bool is_completed = 5;
+}
+
+message DeleteMovementRequest {
+	int32 id = 1;
+}
+
+message ProcessMovementRequest {
+	int32 id = 1;
+	string description = 2;
+}
+
+
+// Movement Line
+message CreateMovementLineRequest {
+	int32 movement_id = 1;
+	int32 warehouse_id = 2;
+	int32 warehouse_to_id = 3;
+	string description = 4;
+	int32 product_id = 5;
+	string quantity = 6;
+}
+
+message MovementLine {
+	int32 id = 1;
+	int32 warehouse_id = 2;
+	int32 warehouse_to_id = 3;
+	Product product = 4;
+	string description = 5;
+	string quantity = 6;
+	int32 line = 7;
+}
+
+message ListMovementLinesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 movement_id = 8;
+}
+
+message ListMovementLinesResponse {
+	int64 record_count = 1;
+	repeated MovementLine records = 2;
+	string next_page_token = 3;
+}
+
+message DeleteMovementLineRequest {
+	int32 movement_id = 1;
+	int32 id = 2;
+}
+
+message UpdateMovementLineRequest {
+	int32 movement_id = 1;
+	int32 id = 2;
+	string description = 3;
+	string quantity = 4;
+}

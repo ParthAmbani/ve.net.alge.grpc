@@ -1,0 +1,132 @@
+/************************************************************************************
+ * Copyright (C) 2018-present E.R.P. Consultores y Asociados, C.A.                  *
+ * Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com                     *
+ * This program is free software: you can redistribute it and/or modify             *
+ * it under the terms of the GNU General Public License as published by             *
+ * the Free Software Foundation, either version 2 of the License, or                *
+ * (at your option) any later version.                                              *
+ * This program is distributed in the hope that it will be useful,                  *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                   *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                     *
+ * GNU General Public License for more details.                                     *
+ * You should have received a copy of the GNU General Public License                *
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.            *
+ ************************************************************************************/
+syntax = "proto3";
+
+
+option java_multiple_files = true;
+option java_package = "org.spin.backend.grpc.inout";
+option java_outer_classname = "ADempiereInOut";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+import "base_data_type.proto";
+
+// Base URL
+// /fields/in-outs/
+
+package field.in_out;
+
+// The in-out service definition.
+service InOutInfoService {
+	// Filters
+	rpc ListBusinessPartners(ListBusinessPartnersRequest) returns (data.ListLookupItemsResponse) {
+		option (google.api.http) = {
+			get: "/fields/in-outs/business-partners"
+		};
+	}
+	rpc ListShippers(ListShippersRequest) returns (data.ListLookupItemsResponse) {
+		option (google.api.http) = {
+			get: "/fields/in-outs/shippers"
+		};
+	}
+
+	// Result
+	rpc ListInOutInfo(ListInOutInfoRequest) returns (data.ListEntitiesResponse) {
+		option (google.api.http) = {
+			get: "/fields/in-outs"
+			additional_bindings: {
+				get: "/fields/in-outs/table/{table_name}/{column_name}"
+			}
+			additional_bindings: {
+				get: "/fields/in-outs/column/{column_id}"
+			}
+			additional_bindings: {
+				get: "/fields/in-outs/field/{field_id}"
+			}
+			additional_bindings: {
+				get: "/fields/in-outs/parameter/{process_parameter_id}"
+			}
+			additional_bindings: {
+				get: "/fields/in-outs/query-criteria/{browse_field_id}"
+			}
+			additional_bindings: {
+				get: "/fields/in-outs/display-definition/{display_definition_field_id}"
+			}
+		};
+	}
+}
+
+
+// Business Partners
+message ListBusinessPartnersRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+	// custom filters
+	string is_sales_transaction = 10;
+}
+
+// Shippers
+message ListShippersRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+}
+
+
+// InOut Info
+message ListInOutInfoRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+	bool is_without_validation = 10;
+	// references
+	int32 reference_id = 11;
+	string table_name = 12;
+	string column_name = 13;
+	int32 column_id = 14;
+	int32 field_id = 15;
+	int32 process_parameter_id = 16;
+	int32 browse_field_id = 17;
+	int32 display_definition_field_id = 18;
+	// custom filters
+	string document_no = 19;
+	int32 business_partner_id = 20;
+	string is_sales_transaction = 21;
+	string description = 22;
+	google.protobuf.Timestamp movement_date_from = 23;
+	google.protobuf.Timestamp movement_date_to = 24;
+	string order_reference = 25;
+	int32 shipper_id = 26;
+}

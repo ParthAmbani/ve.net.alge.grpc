@@ -1,0 +1,106 @@
+/*************************************************************************************
+ * Copyright (C) 2012-2018 E.R.P. Consultores y Asociados, C.A.                      *
+ * Contributor(s): Yamel Senih ysenih@erpya.com                                      *
+ * This program is free software: you can redistribute it and/or modify              *
+ * it under the terms of the GNU General Public License as published by              *
+ * the Free Software Foundation, either version 2 of the License, or                 *
+ * (at your option) any later version.                                               *
+ * This program is distributed in the hope that it will be useful,                   *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                    *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                     *
+ * GNU General Public License for more details.                                      *
+ * You should have received a copy of the GNU General Public License                 *
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.            *
+ ************************************************************************************/
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.spin.backend.grpc.wms";
+option java_outer_classname = "ADempiereWMS";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+import "base_data_type.proto";
+import "core_functionality.proto";
+
+// Base URL
+// /warehouse-management/
+
+package wms;
+
+// The Update service definition.
+service WarehouseManagement {
+ 	//	Create OutBound Order
+	rpc CreateOutBoundOrder(CreateOutBoundOrderRequest) returns (OutBoundOrder) {
+		option (google.api.http) = { 
+			post: "/warehouse-management/orders",
+			body: "*"
+		};
+	}
+	//	Delete OutBound Order
+	rpc DeleteOutBoundOrder(DeleteOutBoundOrderRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = { delete: "/warehouse-management/orders/{id}" };
+	}
+	//	Get a OutBound Order
+	rpc GetOutBoundOrder(GetOutBoundOrderRequest) returns (OutBoundOrder) {
+		option (google.api.http) = { get: "/warehouse-management/orders/{id}" };
+	}
+	//	List OutBound Orders
+	rpc ListOutBoundOrders(ListOutBoundOrdersRequest) returns (ListOutBoundOrdersResponse) {
+		option (google.api.http) = { get: "/warehouse-management/orders" };
+	}
+}
+
+//	OutBound Order request to create
+message CreateOutBoundOrderRequest {
+	int32 document_type_id = 1;
+	int32 warehouse_id = 2;
+	int32 sales_representative_id = 3;
+}
+
+//	OutBound Order
+message OutBoundOrder {
+	int32 id = 1;
+	string document_no = 2;
+	core_functionality.DocumentType document_type = 3;
+	core_functionality.SalesRepresentative sales_representative = 4;
+	data.DocumentStatus document_status = 5;
+	google.protobuf.Timestamp date_ordered = 6;
+}
+
+// Request for delete a outbound order
+message DeleteOutBoundOrderRequest {
+	int32 order_id = 1;
+}
+
+// Request for get a outbound order
+message GetOutBoundOrderRequest {
+	int32 order_id = 1;
+}
+
+// List OutBound Orders Request
+message ListOutBoundOrdersRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 warehouse_id = 8;
+	string document_no = 9;
+	int32 order_reference_id = 10;
+	bool is_processed = 11;
+	google.protobuf.Timestamp pick_date_from = 12;
+	google.protobuf.Timestamp pick_date_to = 13;
+	int32 sales_representative_id = 14;
+}
+
+//	List OutBound Orders Response
+message ListOutBoundOrdersResponse {
+	int64 record_count = 1;
+	repeated OutBoundOrder outbound_orders = 2;
+	string next_page_token = 3;
+}

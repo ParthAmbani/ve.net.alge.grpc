@@ -1,0 +1,407 @@
+/************************************************************************************
+ * Copyright (C) 2012-present E.R.P. Consultores y Asociados, C.A.                  *
+ * Contributor(s): Yamel Senih ysenih@erpya.com                                     *
+ * This program is free software: you can redistribute it and/or modify             *
+ * it under the terms of the GNU General Public License as published by             *
+ * the Free Software Foundation, either version 2 of the License, or                *
+ * (at your option) any later version.                                              *
+ * This program is distributed in the hope that it will be useful,                  *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                   *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                     *
+ * GNU General Public License for more details.                                     *
+ * You should have received a copy of the GNU General Public License                *
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.            *
+ ************************************************************************************/
+ syntax = "proto3";
+
+
+ option java_multiple_files = true;
+ option java_package = "org.spin.backend.grpc.user_interface";
+ option java_outer_classname = "ADempiereUserInterface";
+ 
+ import "base_data_type.proto";
+ import "google/api/annotations.proto";
+ import "google/protobuf/timestamp.proto";
+ import "google/protobuf/struct.proto";
+ 
+ // Base URL
+ // /user-interface/
+ 
+ package user_interface;
+
+//	User Interface
+service UserInterface {
+	// Get a Tab Entity
+	rpc GetTabEntity(GetTabEntityRequest) returns (data.Entity) {
+		option (google.api.http) = { get: "/user-interface/entities/{tab_id}/{id}" };
+	}
+	// Create Tab Entity
+	rpc CreateTabEntity(CreateTabEntityRequest) returns (data.Entity) {
+		option (google.api.http) = {
+			post: "/user-interface/entities/{tab_id}",
+			body: "*"
+		};
+	}
+	// Update Tab Entity
+	rpc UpdateTabEntity(UpdateTabEntityRequest) returns (data.Entity) {
+		option (google.api.http) = {
+			patch: "/user-interface/entities/{tab_id}/{id}",
+			body: "*"
+		};
+	}
+	//	List tab Entities
+	rpc ListTabEntities(ListTabEntitiesRequest) returns (data.ListEntitiesResponse) {
+		option (google.api.http) = { get: "/user-interface/entities/{tab_id}" };
+	}
+	//	Rollback Entity Request
+	rpc RollbackEntity(RollbackEntityRequest) returns (data.Entity) {
+		option (google.api.http) = {
+			patch: "/user-interface/entities/{table_name}/{id}/rollback",
+			body: "*"
+		};
+	}
+	// Run a Callout
+	rpc RunCallout(RunCalloutRequest) returns (Callout) {
+		option (google.api.http) = {
+			post: "/user-interface/run-callout/{tab_id}/{column_name}/{callout}",
+			body: "*"
+		};
+	}
+	//	Request Translations List
+	rpc ListTranslations(ListTranslationsRequest) returns (ListTranslationsResponse) {
+		option (google.api.http) = { get: "/user-interface/translations/{table_name}/{id}/{language}" };
+	}
+
+	//	Browser Data
+	rpc ListBrowserItems(ListBrowserItemsRequest) returns (ListBrowserItemsResponse) {
+		option (google.api.http) = { get: "/user-interface/browser-items/{id}" };
+	}
+	rpc ExportBrowserItems(ExportBrowserItemsRequest) returns (ExportBrowserItemsResponse) {
+		option (google.api.http) = { get: "/user-interface/browser-items/{id}/export" };
+	}
+	rpc UpdateBrowserEntity(UpdateBrowserEntityRequest) returns (data.Entity) {
+		option (google.api.http) = {
+			patch: "/user-interface/browser-items/{id}/{record_id}",
+			body: "*"
+		};
+	}
+
+	// Get context Info
+	rpc GetContextInfoValue(GetContextInfoValueRequest) returns (ContextInfoValue) {
+		option (google.api.http) = { get: "/user-interface/context-info/{id}" };
+	}
+	// Add Chat Entry
+	rpc CreateChatEntry(CreateChatEntryRequest) returns (ChatEntry) {
+		option (google.api.http) = {
+			post: "/user-interface/chat-entry/{table_name}",
+			body: "*"
+		};
+	}
+	//	List Tab Sequences
+	rpc ListTabSequences(ListTabSequencesRequest) returns (data.ListEntitiesResponse) {
+		option (google.api.http) = {get: "/user-interface/tab-sequences/{tab_id}" };
+	}
+	//	Save Tab Sequences
+	rpc SaveTabSequences(SaveTabSequencesRequest) returns (data.ListEntitiesResponse) {
+		option (google.api.http) = {
+			post: "/user-interface/tab-sequences/{tab_id}",
+			body: "*"
+		};
+	}
+	// List Tree Nodes Request
+	rpc ListTreeNodes(ListTreeNodesRequest) returns (ListTreeNodesResponse) {
+		option (google.api.http) = {
+			get: "/user-interface/tree-nodes/{table_name}"
+			additional_bindings: {
+				get: "/user-interface/tree-nodes/tab/{tab_id}"
+			}
+		};
+	}
+	// List Mail Templates
+	rpc ListMailTemplates(ListMailTemplatesRequest) returns (ListMailTemplatesResponse) {
+		option (google.api.http) = { get: "/user-interface/mail-templates" };
+	}
+}
+
+// Translations Item
+message Translation {
+	string language = 1;
+	google.protobuf.Struct values = 2;
+}
+
+
+//  Empty message
+message RollbackEntityRequest {
+	string table_name = 1;
+	int32 id = 2;
+	int32 log_id = 3;
+}
+
+
+// Browser Items
+message ListBrowserItemsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	// custom filters
+	int32 id = 9;
+}
+message ListBrowserItemsResponse {
+	int64 record_count = 1;
+	repeated data.Entity records = 2;
+	string next_page_token = 3;
+}
+message BrowserHeaderField {
+	string column_name = 1;
+	string name = 2;
+	int32 display_type = 3;
+	int32 sequence = 4;
+}
+message ExportBrowserItemsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	// custom filters
+	int32 id = 9;
+}
+message ExportBrowserItemsResponse {
+	int64 record_count = 1;
+	repeated data.Entity records = 2;
+	repeated BrowserHeaderField header_fields = 3;
+}
+message UpdateBrowserEntityRequest {
+	int32 id = 1;
+	int32 record_id = 2;
+	google.protobuf.Struct attributes = 3;
+}
+
+// Context Info Value
+message ContextInfoValue {
+	string message_text = 1;
+	string message_tip = 2;
+}
+
+// Get Lookup Item
+message GetContextInfoValueRequest {
+	int32 id = 1;
+	// Query
+	string query = 2;
+}
+
+// Get Tab Entity Request
+message GetTabEntityRequest {
+	int32 id = 1;
+	int32 window_id = 2;
+	int32 tab_id = 3;
+	string context_attributes = 4;
+}
+
+// Create Tab Entity Request
+message CreateTabEntityRequest {
+	int32 window_id = 1;
+	int32 tab_id = 2;
+	google.protobuf.Struct attributes = 3;
+}
+
+// Update Tab Entity Request
+message UpdateTabEntityRequest {
+	int32 id = 1;
+	int32 window_id = 2;
+	int32 tab_id = 3;
+	google.protobuf.Struct attributes = 4;
+}
+
+// List Tab Entities Request
+message ListTabEntitiesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 window_id = 8;
+	int32 tab_id = 9;
+	string context_attributes = 10;
+	string record_reference_uuid = 11;
+}
+
+// Callout Request
+message RunCalloutRequest {
+	string table_name = 1;
+	int32 window_id = 2;
+	int32 tab_id = 3;
+	string callout = 4;
+	string column_name = 5;
+	google.protobuf.Value old_value = 6;
+	google.protobuf.Value value = 7;
+	int32 window_no = 8;
+	google.protobuf.Struct context_attributes = 9;
+}
+
+// Callout response with data from server
+message Callout {
+	string result = 1;
+	google.protobuf.Struct values = 2;
+}
+
+// Translations Request
+message ListTranslationsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 id = 8;
+	string table_name = 9;
+	string language = 10;
+}
+
+//	Translations List
+message ListTranslationsResponse {
+	int64 record_count = 1;
+	repeated Translation translations = 2;
+	string next_page_token = 3;
+}
+
+// Create Chat Entry Request
+message CreateChatEntryRequest {
+	string table_name = 1;
+	int32 id = 2;
+	string comment = 3;
+}
+
+// Record Chat
+enum ConfidentialType {
+	PUBLIC = 0;
+	PARTER = 1;
+	INTERNAL = 2;
+}
+enum ModeratorStatus {
+	NOT_DISPLAYED = 0;
+	PUBLISHED = 1;
+	SUSPICIUS = 2;
+	TO_BE_REVIEWED = 3;
+}
+enum ChatEntryType {
+	NOTE_FLAT = 0;
+	FORUM_THREADED = 1;
+	WIKI = 2;
+}
+message ChatEntry {
+	int32 chat_id = 1;
+	int32 id = 2;
+	string subject = 3;
+	string character_data = 4;
+	int32 user_id = 5;
+	string user_name = 6;
+	ChatEntryType chat_entry_type = 7;
+	ConfidentialType confidential_type = 8;
+	ModeratorStatus moderator_status = 9;
+	google.protobuf.Timestamp log_date = 10;
+}
+
+
+
+message ListTabSequencesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 9;
+	// dictinary attributes
+	int32 window_id = 10;
+	int32 tab_id = 11;
+	// record attributes
+	string filter_column_name = 12;
+	int32 filter_record_id = 13;
+}
+
+message SaveTabSequencesRequest {
+	int32 tab_id = 1;
+	google.protobuf.Struct context_attributes = 2;
+	repeated data.KeyValueSelection entities = 3;
+}
+
+
+// List Tree Nodes Request
+message ListTreeNodesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 tab_id = 8;
+	string table_name = 9;
+	int32 id = 10;
+	int32 element_id = 11;
+	string context_attributes = 12;
+}
+
+// Tree Node
+message TreeNode {
+	int32 id = 1;
+	int32 parent_id = 2;
+	int32 record_id = 3;
+	string name = 4;
+	string description = 5;
+	string sequence = 6;
+	bool is_summary = 7;
+	bool is_active = 8;
+	repeated TreeNode childs = 9;
+}
+
+message TreeType {
+	int32 id = 1;
+	string value = 2;
+	string name = 3;
+	string description = 4;
+}
+
+// List Tree Nodes Response
+message ListTreeNodesResponse {
+	int64 record_count = 1;
+	repeated TreeNode records = 2;
+	string next_page_token = 3;
+	TreeType tree_type = 4;
+}
+
+message MailTemplate {
+	int32 id = 1;
+	string name = 2;
+	string subject = 3;
+	string mail_text = 4;
+}
+
+message ListMailTemplatesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+}
+
+message ListMailTemplatesResponse {
+	int64 record_count = 1;
+	repeated MailTemplate records = 2;
+	string next_page_token = 3;
+}

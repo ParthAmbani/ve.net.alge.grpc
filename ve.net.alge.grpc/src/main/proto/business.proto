@@ -1,0 +1,165 @@
+/************************************************************************************
+ * Copyright (C) 2012-present E.R.P. Consultores y Asociados, C.A.                  *
+ * Contributor(s): Yamel Senih ysenih@erpya.com                                     *
+ * This program is free software: you can redistribute it and/or modify             *
+ * it under the terms of the GNU General Public License as published by             *
+ * the Free Software Foundation, either version 2 of the License, or                *
+ * (at your option) any later version.                                              *
+ * This program is distributed in the hope that it will be useful,                  *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                   *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                     *
+ * GNU General Public License for more details.                                     *
+ * You should have received a copy of the GNU General Public License                *
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.            *
+ ************************************************************************************/
+syntax = "proto3";
+
+
+option java_multiple_files = true;
+option java_package = "org.spin.backend.grpc.common";
+option java_outer_classname = "ADempiereData";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
+
+import "base_data_type.proto";
+
+// Base URL
+// /business-data/
+
+package data;
+
+// The greeting service definition.
+service BusinessData {
+	// Get a Entity
+	rpc GetEntity(GetEntityRequest) returns (Entity) {
+		option (google.api.http) = { get: "/business-data/entities/{table_name}/{id}" };
+	}
+	// Create Entity Request
+	rpc CreateEntity(CreateEntityRequest) returns (Entity) {
+		option (google.api.http) = {
+			post: "/business-data/entities/{table_name}",
+			body: "*"
+		};
+	}
+	// Update Entity Request
+	rpc UpdateEntity(UpdateEntityRequest) returns (Entity) {
+		option (google.api.http) = {
+			patch: "/business-data/entities/{table_name}/{id}",
+			body: "*"
+		};
+	}
+	// Delete Entity Request
+	rpc DeleteEntity(DeleteEntityRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = { delete: "/business-data/entities/{table_name}/{id}" };
+	}
+	// Delete Entity Request
+	rpc DeleteEntitiesBatch(DeleteEntitiesBatchRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = { post: "/business-data/entities/batch-delete/{table_name}" };
+	}
+	//	List a Entities
+	rpc ListEntities(ListEntitiesRequest) returns (ListEntitiesResponse) {
+		option (google.api.http) = { get: "/business-data/entities/{table_name}" };
+	}
+	//	Request a BusinessProcess / Report
+	rpc RunBusinessProcess(RunBusinessProcessRequest) returns (ProcessLog) {
+		option (google.api.http) = {
+			post: "/business-data/process/{id}",
+			body: "*"
+			additional_bindings: {
+				post: "/business-data/report/{id}",
+				body: "*"
+			}
+			additional_bindings: {
+				post: "/business-data/process/{id}/smart-browse/{browser_id}",
+				body: "*"
+			}
+			additional_bindings: {
+				post: "/business-data/process/{id}/window/{table_name}",
+				body: "*"
+			}
+			additional_bindings: {
+				post: "/business-data/process/{id}/window/{table_name}/{record_id}",
+				body: "*"
+			}
+			additional_bindings: {
+				post: "/business-data/process/{id}/workflow/{table_name}/{record_id}/{document_action}",
+				body: "*"
+			}
+		};
+	}
+}
+
+// Create Entity Request
+message CreateEntityRequest {
+	string table_name = 1;
+	google.protobuf.Struct attributes = 2;
+}
+
+// Get Entity Request
+message GetEntityRequest {
+	int32 id = 1;
+	string table_name = 2;
+	//	Filters
+	string filters = 3;
+	string sort_by = 4;
+	repeated string group_columns = 5;
+	repeated string select_columns = 6;
+	int32 page_size = 7;
+	string page_token = 8;
+}
+
+message ListEntitiesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string table_name = 8;
+	string record_reference_uuid = 9;
+}
+
+// Update Entity Request
+message UpdateEntityRequest {
+	string table_name = 1;
+	int32 id = 2;
+	google.protobuf.Struct attributes = 3;
+}
+
+// Delete Entity Request
+message DeleteEntityRequest {
+	string table_name = 1;
+	int32 id = 2;
+}
+
+// Delete Batch Entity Request
+message DeleteEntitiesBatchRequest {
+	string table_name = 1;
+	repeated int32 ids = 2;
+}
+
+// BusinessProcess Request
+message RunBusinessProcessRequest {
+	int32 id = 1;
+	google.protobuf.Struct parameters = 2;
+	// report
+	string report_type = 3;
+	int32 print_format_id = 4;
+	int32 report_view_id = 5;
+	bool is_summary = 6;
+	// browser
+	int32 browser_id = 7;
+	repeated KeyValueSelection selections = 8;
+	bool is_all_selection = 9;
+	string browser_context_attributes = 10;
+	string criteria_filters = 11;
+	// window
+	string table_name = 12;
+	int32 record_id = 13;
+	// workflow
+	int32 workflow_id = 14;
+	string document_action = 15;
+}

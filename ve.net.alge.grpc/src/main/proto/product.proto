@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option java_package = "org.idempiere.grpc";
+option java_outer_classname = "ProductServiceOuterClass";
+
+service ProductService {
+  rpc GetProduct (ProductRequest) returns (ProductResponse);
+}
+
+message ProductRequest {
+  string id = 1; // This is fine for ProductRequest
+}
+
+message ProductResponse {
+  string productId = 1; // Changed field name to productId to avoid conflict
+  string name = 2;
+  string description = 3; // ← This must be present
+}

@@ -1,0 +1,522 @@
+/************************************************************************************
+ * Copyright (C) 2012-present E.R.P. Consultores y Asociados, C.A.                  *
+ * Contributor(s): Yamel Senih ysenih@erpya.com                                     *
+ * This program is free software: you can redistribute it and/or modify             *
+ * it under the terms of the GNU General Public License as published by             *
+ * the Free Software Foundation, either version 2 of the License, or                *
+ * (at your option) any later version.                                              *
+ * This program is distributed in the hope that it will be useful,                  *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                   *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                     *
+ * GNU General Public License for more details.                                     *
+ * You should have received a copy of the GNU General Public License                *
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.            *
+ ************************************************************************************/
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.spin.backend.grpc.dictionary";
+option java_outer_classname = "ADempiereDictionary";
+
+import "google/api/annotations.proto";
+
+package dictionary;
+
+// The greeting service definition.
+service Dictionary {
+	// Request a Window
+	rpc GetWindow(EntityRequest) returns (Window) {
+		option (google.api.http) = { get: "/dictionary/windows/{id}" };
+	}
+	// Request a Tab
+	rpc GetTab(EntityRequest) returns (Tab) {
+		option (google.api.http) = { get: "/dictionary/tabs/{id}" };
+	}
+	// Request a Field
+	rpc GetField(FieldRequest) returns (Field) {
+		option (google.api.http) = {
+			get: "/dictionary/fields/{id}"
+			additional_bindings: {
+				get: "/dictionary/fields/{table_name}/{column_name}"
+			}
+			additional_bindings: {
+				get: "/dictionary/fields/column/{column_id}"
+			}
+			additional_bindings: {
+				get: "/dictionary/fields/element/{element_id}"
+			}
+			additional_bindings: {
+				get: "/dictionary/fields/element/column/{element_column_name}"
+			}
+		};
+	}
+
+	// Request Process/Report
+	rpc GetProcess(EntityRequest) returns (Process) {
+		option (google.api.http) = {
+			get: "/dictionary/processes/{id}"
+			additional_bindings: {
+				get: "/dictionary/reports/{id}"
+			}
+		};
+	}
+	rpc ListProcesses(ListProcessesRequest) returns (ListProcessesResponse) {
+		option (google.api.http) = {
+			get: "/dictionary/processes/table/{table_name}"
+			additional_bindings: {
+				get: "/dictionary/reports/table/{table_name}"
+			}
+		};
+	}
+
+	// Request Browser
+	rpc GetBrowser(EntityRequest) returns (Browser) {
+		option (google.api.http) = { get: "/dictionary/browsers/{id}" };
+	}
+	// Get Form
+	rpc GetForm(EntityRequest) returns (Form) {
+		option (google.api.http) = { get: "/dictionary/forms/{id}" };
+	}
+
+	rpc ListIdentifiersColumns(ListIdentifierColumnsRequest) returns (ListIdentifierColumnsResponse) {
+		option (google.api.http) = {
+			get: "/dictionary/identifiers/{table_name}"
+			additional_bindings: {
+				get: "/dictionary/identifiers/table/{table_name}/{column_name}"
+			}
+			additional_bindings: {
+				get: "/field/identifiers/column/{column_id}"
+			}
+			additional_bindings: {
+				get: "/field/identifiers/field/{field_id}"
+			}
+			additional_bindings: {
+				get: "/field/identifiers/parameter/{process_parameter_id}"
+			}
+			additional_bindings: {
+				get: "/field/identifiers/query-criteria/{browse_field_id}"
+			}
+			additional_bindings: {
+				get: "/dictionary/identifiers/element/{element_id}"
+			}
+			additional_bindings: {
+				get: "/dictionary/identifiers/element/column/{element_column_name}"
+			}
+		};
+	}
+
+	// List Search Info Fields
+	rpc ListSearchFields(ListSearchFieldsRequest) returns (ListSearchFieldsResponse) {
+		option (google.api.http) = {
+			get: "/dictionary/search/{table_name}"
+			additional_bindings: {
+				get: "/dictionary/search/table/{table_name}/{column_name}"
+			}
+			additional_bindings: {
+				get: "/dictionary/search/column/{column_id}"
+			}
+			additional_bindings: {
+				get: "/dictionary/search/field/{field_id}"
+			}
+			additional_bindings: {
+				get: "/dictionary/search/parameter/{process_parameter_id}"
+			}
+			additional_bindings: {
+				get: "/dictionary/search/query-criteria/{browse_field_id}"
+			}
+			additional_bindings: {
+				get: "/dictionary/search/element/{element_id}"
+			}
+			additional_bindings: {
+				get: "/dictionary/search/element/column/{element_column_name}"
+			}
+		};
+	}
+}
+
+// Object request
+message EntityRequest {
+	string id = 1; // UUID
+}
+
+// Field request
+message FieldRequest {
+	int32 id = 1;
+	int32 column_id = 2;
+	int32 element_id = 3;
+	string element_column_name = 4;
+	// Table_name + _column_name
+	string table_name = 5;
+	string column_name = 6;
+}
+
+// Window
+message Window {
+	string id = 1;
+	string uuid = 2;
+	int32 internal_id = 3;
+	string name = 4;
+	string description = 5;
+	string help = 6;
+	bool is_sales_transaction = 7;
+	bool is_active = 8;
+	bool is_beta_functionality = 9;
+	string window_type = 10;
+	//	External Info
+	// ContextInfo context_info = 9;
+	repeated Tab tabs = 11;
+}
+
+message Table {
+	int32 internal_id = 1;
+	string id = 2;
+	string uuid = 3;
+	string table_name = 4;
+	int32 access_level = 5;
+	repeated string key_columns = 6;
+	bool is_view = 7;
+	bool is_deleteable = 8;
+	bool is_document = 9;
+	bool is_change_log = 10;
+	repeated string identifier_columns = 11;
+	repeated string selection_columns = 12;
+}
+
+// Tab
+message Tab {
+	string id = 1;
+	string uuid = 2;
+	int32 internal_id = 3;
+	string name = 4;
+	string description = 5;
+	string help = 6;
+	// Table attributes
+	string table_name = 7;
+	Table table = 8;
+	// Record Attributes
+	bool is_insert_record = 9;
+	string commit_warning = 10;
+	// Attributes
+	string display_logic = 11;
+	int32 sequence = 12;
+	int32 tab_level = 13;
+	bool is_read_only = 14;
+	string read_only_logic = 15;
+	bool is_single_row = 16;
+	bool is_advanced_tab = 17;
+	bool is_has_tree = 18;
+	bool is_info_tab = 19;
+	bool is_translation_tab = 20;
+	// Link attributes
+	string link_column_name = 21;
+	string parent_column_name = 22;
+	// Sort attributes
+	bool is_sort_tab = 23;
+	optional string sort_order_column_name = 24;
+	optional string sort_yes_no_column_name = 25;
+	optional string filter_column_name = 26;
+	// External Info
+	int32 window_id = 27;
+	int32 parent_tab_id = 28;
+	repeated string context_column_names = 29;
+	optional int32 process_id = 30;
+	optional string process_uuid = 31;
+	optional Process process = 32;
+	repeated string processes_uuid = 33;
+	repeated Process processes = 34;
+	// Fields Attributes
+	repeated Field fields = 35;
+	// FieldGroup field_group = 33;
+}
+
+// Field
+message Field {
+	string id = 1;
+	string uuid = 2;
+	int32 internal_id = 3;
+	string column_name = 4;
+	string name = 5;
+	string description = 6;
+	string help = 7;
+	int32 display_type = 8;
+	int32 sequence = 9;
+	bool is_displayed = 10;
+	string display_logic = 11;
+	bool is_read_only = 12;
+	string read_only_logic = 13;
+	bool is_mandatory = 14;
+	string mandatory_logic = 15;
+	bool is_key = 16;
+	bool is_range = 17;
+	string default_value = 18;
+	int32 field_length = 19;
+	string v_format = 20;
+	string value_min = 21;
+	string value_max = 22;
+	// External Info
+	optional ContextInfo context_info = 23;
+	optional Reference reference = 24;
+	repeated DependentField dependent_fields = 25;
+	repeated string context_column_names = 26;
+	string element_name = 27;
+	// Window Field Compatibility
+	string column_sql = 28;
+	bool is_displayed_grid = 29;
+	int32 seq_no_grid = 30;
+	optional FieldGroup field_group = 31;
+	bool is_allow_copy = 32;
+	bool is_same_line = 33;
+	bool is_heading = 34;
+	bool is_field_only = 35;
+	string callout = 36;
+	// FieldDefinition field_definition = 37;
+	string format_pattern = 38;
+	bool is_encrypted = 39;
+	bool is_selection_column = 40;
+	bool is_always_updateable = 41;
+	bool is_allow_logging = 42;
+	bool is_updateable = 43;
+	bool is_quick_entry = 44;
+	bool is_parent = 45;
+	bool is_translated = 46;
+	bool is_identifier = 47;
+	int32 identifier_sequence = 48;
+	optional Process process = 49;
+	// Process Parameter Compatibility
+	string default_value_to = 50;
+	bool is_info_only = 51;
+	// Smart Browser Field Compatibility
+	bool is_query_criteria = 52;
+	bool is_order_by = 53;
+	int32 sort_no = 54;
+	// ASP Custom Attributes
+	string is_displayed_as_panel = 55;
+	string is_displayed_as_table = 56;
+}
+
+message DependentField {
+	int32 parent_id = 1;
+	string parent_uuid = 2;
+	string parent_name = 3;
+	string id = 4;
+	string uuid = 5;
+	int32 internal_id = 6;
+	string column_name = 7;
+}
+
+// Context Info
+message ContextInfo {
+	int32 id = 1;
+	string uuid = 3;
+	string name = 4;
+	string description = 5;
+	optional MessageText message_text = 6;
+	string sql_statement = 7;
+}
+
+// Message
+message MessageText {
+	int32 id = 1;
+	string uuid = 2;
+	string value = 3;
+	string message_type = 4;
+	string message_text = 5;
+	string message_tip = 6;
+}
+
+// Context Info
+message FieldGroup {
+	int32 id = 1;
+	string uuid = 2;
+	string name = 3;
+	string field_group_type = 4;
+}
+
+// Context Info
+message FieldDefinition {
+	int32 id = 1;
+	string uuid = 2;
+	string value = 3;
+	string name = 4;
+	string field_group_type = 5;
+	repeated FieldCondition conditions = 6;
+}
+
+// Field Condition
+message FieldCondition {
+	int32 id = 1;
+	string uuid = 2;
+	string condition = 3;
+	string stylesheet = 4;
+}
+
+message DictionaryEntity {
+	string id = 1;
+	string uuid = 2;
+	int32 internal_id = 3;
+	string name = 4;
+	string description = 5;
+	string help = 6;
+}
+
+// Process
+message Process {
+	string id = 1;
+	string uuid = 2;
+	int32 internal_id = 3;
+	string code = 4;
+	string name = 5;
+	string description = 6;
+	string help = 7;
+	bool is_active = 8;
+	string show_help = 9;
+	bool is_beta_functionality = 10;
+	bool is_multi_selection = 11;
+	// Report
+	bool is_report = 12;
+	bool is_process_before_launch = 13;
+	bool is_jasper_report = 14;
+	int32 report_view_id = 15;
+	int32 print_format_id = 16;
+	repeated ReportExportType report_export_types = 17;
+	// Browse
+	int32 browser_id = 18;
+	optional DictionaryEntity browser = 19;
+	// From
+	int32 form_id = 20;
+	optional DictionaryEntity form = 21;
+	// Workflow
+	int32 workflow_id = 22;
+	optional DictionaryEntity workflow = 23;
+	// Parameters
+	bool has_parameters = 24;
+	repeated Field parameters = 25;
+}
+message ListProcessesRequest {
+	string table_name = 1;
+}
+message ListProcessesResponse {
+	int64 record_count = 1;
+	repeated Process processes = 2;
+	string next_page_token = 3;
+}
+
+// Form
+message Form {
+	string id = 1;
+	string uuid = 2;
+	int32 internal_id = 3;
+	string name = 4;
+	string description = 5;
+	string help = 6;
+	bool is_active = 7;
+	bool is_beta_functionality = 8;
+	string file_name = 9;
+}
+
+// Smart Browser
+message Browser {
+	string id = 1;
+	string uuid = 2;
+	int32 internal_id = 3;
+	string code = 4;
+	string name = 5;
+	string description = 6;
+	string help = 7;
+	bool is_active = 8;
+	bool is_beta_functionality = 9;
+	bool is_executed_query_by_default = 10;
+	bool is_collapsible_by_default = 11;
+	bool is_selected_by_default = 12;
+	bool is_show_total = 13;
+	string field_key = 14;
+	// Record Attributes
+	string table_name = 15;
+	optional Table table = 16;
+	int32 access_level = 17;
+	bool is_updateable = 18;
+	bool is_deleteable = 19;
+	// External Reference
+	repeated string context_column_names = 20;
+	int32 window_id = 21;
+	optional DictionaryEntity window = 22;
+	optional int32 process_id = 23;
+	optional string process_uuid = 24;
+	optional DictionaryEntity process = 25;
+	// Browse Fields
+	repeated Field fields = 26;
+}
+
+// Foreign Reference
+message Reference {
+	string table_name = 1;
+	int32 reference_id = 2;
+	int32 reference_value_id = 3;
+	repeated string context_column_names = 4;
+}
+
+// Report Type for Export
+message ReportExportType {
+	string name = 1;
+	string type = 3;
+}
+
+// Identifier Fields
+message ListIdentifierColumnsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	// references
+	string table_name = 8;
+	int32 process_parameter_id = 9;
+	int32 field_id = 10;
+	int32 browse_field_id = 11;
+	int32 column_id = 12;
+	string column_name = 13;
+	int32 element_id = 14;
+	string element_column_name = 15;
+}
+
+message ListIdentifierColumnsResponse {
+	int64 record_count = 1;
+	repeated string identifier_columns = 2;
+	string next_page_token = 3;
+}
+
+
+// Search Fields
+message SearchColumn {
+	string column_name = 1;
+	string name = 2;
+	int32 sequence = 3;
+	int32 display_type = 4;
+}
+
+message ListSearchFieldsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	// references
+	string table_name = 8;
+	int32 process_parameter_id = 9;
+	int32 field_id = 10;
+	int32 browse_field_id = 11;
+	int32 column_id = 12;
+	string column_name = 13;
+	int32 element_id = 14;
+	string element_column_name = 15;
+}
+
+message ListSearchFieldsResponse {
+	string table_name = 1;
+	repeated Field query_fields = 2;
+	repeated SearchColumn table_columns = 3;
+}

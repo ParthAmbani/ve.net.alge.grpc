@@ -1,0 +1,398 @@
+/************************************************************************************
+ * Copyright (C) 2012-present E.R.P. Consultores y Asociados, C.A.                  *
+ * Contributor(s): Yamel Senih ysenih@erpya.com                                     *
+ * This program is free software: you can redistribute it and/or modify             *
+ * it under the terms of the GNU General Public License as published by             *
+ * the Free Software Foundation, either version 2 of the License, or                *
+ * (at your option) any later version.                                              *
+ * This program is distributed in the hope that it will be useful,                  *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                   *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                     *
+ * GNU General Public License for more details.                                     *
+ * You should have received a copy of the GNU General Public License                *
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.            *
+ ************************************************************************************/
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.spin.backend.grpc.core_functionality";
+option java_outer_classname = "ADempiereCoreFunctionality";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+// Base URL
+// /core-functionality/
+
+package core_functionality;
+
+service CoreFunctionality {
+	// system information
+	rpc GetSystemInfo(GetSystemInfoRequest) returns (SystemInfo) {
+		option (google.api.http) = { get: "/core-functionality/system-info" };
+	}
+
+	//	Get Country Information
+	rpc GetCountry(GetCountryRequest) returns (Country) {
+		option (google.api.http) = { get: "/core-functionality/countries/{id}" };
+	}
+	//	Request Language List
+	rpc ListLanguages(ListLanguagesRequest) returns (ListLanguagesResponse) {
+		option (google.api.http) = { get: "/core-functionality/languages" };
+	}
+
+	//	Get Currency
+	rpc GetCurrency(GetCurrencyRequest) returns (Currency) {
+		option (google.api.http) = {
+			get: "/core-functionality/currencies/{id}"
+			additional_bindings: {
+				get: "/core-functionality/currencies/iso/{code}"
+			}
+		};
+	}
+	//	Get Currency Rate
+	rpc GetConversionRate(GetConversionRateRequest) returns (ConversionRate) {
+		option (google.api.http) = { get: "/core-functionality/conversion-rates" };
+	}
+
+	//	Get Price List
+	rpc GetPriceList(GetPriceListRequest) returns (PriceList) {
+		option (google.api.http) = { get: "/core-functionality/price-lists/{id}" };
+	}
+
+
+	//	Get Unit Of Measure
+	rpc GetUnitOfMeasure(GetUnitOfMeasureRequest) returns (UnitOfMeasure) {
+		option (google.api.http) = {
+			get: "/core-functionality/uom/{id}"
+			additional_bindings: {
+				get: "/core-functionality/uom/code/{code}"
+			}
+		};
+	}
+	//	Product Conversion UOM
+	rpc ListProductConversion(ListProductConversionRequest) returns (ListProductConversionResponse) {
+		option (google.api.http) = { get: "/core-functionality/product-conversions/{id}" };
+	}
+}
+
+message GetSystemInfoRequest {
+	// empty request
+}
+
+message SystemInfo {
+	// adempiere
+	string name = 1;
+	string release_no = 2;
+	string version = 3;
+	string last_build_info = 4;
+	string logo_url = 5;
+	// backend
+	google.protobuf.Timestamp backend_date_version = 6;
+	string backend_main_version = 7;
+	string backend_implementation_version = 8;
+}
+
+// Get Country Request
+message GetCountryRequest {
+	int32 id = 1;
+}
+
+
+// Languages Request
+message ListLanguagesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+}
+
+//	Languages List
+message ListLanguagesResponse {
+	int64 record_count = 1;
+	repeated Language languages = 2;
+	string next_page_token = 3;
+}
+
+// Country
+message Country {
+	int32 id = 1;
+	string uuid = 2;
+	string country_code = 3;
+	string name = 4;
+	string description = 5;
+	bool has_region = 6;
+	string region_name = 7;
+	string display_sequence = 8;
+	bool is_address_lines_reverse = 9;
+	string capture_sequence = 10;
+	string display_sequence_local = 11;
+	bool is_address_lines_local_reverse = 12;
+	string expression_postal = 13;
+	bool has_postal_add = 14;
+	string expression_phone = 15;
+	string media_size = 16;
+	string expression_bank_routing_no = 17;
+	string expression_bank_account_no = 18;
+	string language = 19;
+	bool allow_cities_out_of_list = 20;
+	bool is_postcode_lookup = 21;
+	Currency currency = 22;
+}
+
+// Request Currency Rate
+message GetConversionRateRequest {
+	int32 conversion_type_id = 2;
+	int32 currency_from_id = 3;
+	int32 currency_to_id = 4;
+	google.protobuf.Timestamp conversion_date = 5;
+}
+
+// Currency info
+message Currency {
+	int32 id = 1;
+	string uuid = 2;
+	string iso_code = 3;
+	string cur_symbol = 4;
+	string description = 5;
+	int32 standard_precision = 6;
+	int32 costing_precision = 7;
+}
+message GetCurrencyRequest {
+	int32 id = 1;
+	string code = 2;
+}
+
+
+// Conversion Rate
+message ConversionRate {
+	int32 id = 1;
+	int32 conversion_type_id = 2;
+	google.protobuf.Timestamp valid_from = 3;
+	google.protobuf.Timestamp valid_to = 4;
+	Currency currency_from = 5;
+	Currency currency_to = 6;
+	string multiply_rate = 7;
+	string divide_rate = 8;
+}
+
+// Organization
+message Organization {
+	int32 id = 1;
+	string name = 2;
+	string description = 3;
+	bool is_read_only = 4;
+	string duns = 5;
+	string tax_id = 6;
+	string phone = 7;
+	string phone2 = 8;
+	string fax = 9;
+	string corporate_branding_image = 10;
+}
+
+// Warehouse
+message Warehouse {
+	int32 id = 1;
+	string name = 2;
+	string description = 3;
+}
+
+
+// Unit of Measure
+message UnitOfMeasure {
+	int32 id = 1;
+	string uuid = 2;
+	string code = 3;
+	string symbol = 4;
+	string name = 5;
+	string description = 6;
+	int32 standard_precision = 7;
+	int32 costing_precision = 8;
+}
+message GetUnitOfMeasureRequest {
+	int32 id = 1;
+	string code = 2;
+}
+
+
+// Product Unit of Measure
+message ProductConversion {
+	int32 id = 1;
+	UnitOfMeasure uom = 2;
+	UnitOfMeasure product_uom = 3;
+	string multiply_rate = 4;
+	string divide_rate = 5;
+}
+message ListProductConversionRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 id = 8;
+}
+message ListProductConversionResponse {
+	int64 record_count = 1;
+	repeated ProductConversion product_conversion = 2;
+	string next_page_token = 3;
+}
+
+
+// Charge definition
+message Charge {
+	int32 id = 1;
+	string name = 2;
+	string description = 3;
+}
+
+// Business Partner
+message BusinessPartner {
+	int32 id = 1;
+	string value = 2;
+	string tax_id = 3;
+	string duns = 4;
+	string naics = 5;
+	string name = 6;
+	string last_name = 7;
+	string description = 8;
+	
+}
+
+// Document Type definition
+message DocumentType {
+	int32 id = 1;
+	string name = 2;
+	string print_name = 3;
+	string description = 4;
+}
+
+// Sales Representative definition
+message SalesRepresentative {
+	int32 id = 1;
+	string name = 2;
+	string description = 3;
+}
+
+// Product Definition
+message Product {
+	int32 id = 1;
+	string value = 2;
+	string name = 3;
+	string help = 4;
+	string document_note = 5;
+	string uom_name = 6;
+	string product_type = 7;
+	bool is_stocked = 8;
+	bool is_drop_ship = 9;
+	bool is_purchased = 10;
+	bool is_sold = 11;
+	string image_url = 12;
+	string product_category_name = 13;
+	string product_group_name = 14;
+	string product_class_name = 15;
+	string product_classification_name = 16;
+	string weight = 17;
+	string volume = 18;
+	string upc = 19;
+	string sku = 20;
+	string shelf_width = 21;
+	string shelf_height = 22;
+	string shelf_depth = 23;
+	string units_per_pack = 24;
+	string units_per_pallet = 25;
+	int32 guarantee_days = 26;
+	string description_url = 27;
+	string version_no = 28;
+	string tax_category = 29;
+	string description = 30;
+}
+
+// Tax Rate
+message TaxRate {
+	int32 id = 1;
+	string name = 2;
+	string description = 3;
+	string tax_indicator = 4;
+	string rate = 5;
+}
+
+// Product Price
+message ProductPrice {
+	Product product = 1;
+	string price_list = 2;
+	string price_standard = 3;
+	string price_limit = 4;
+	string price_list_name = 5;
+	bool is_tax_included = 6;
+	string valid_from = 7;
+	Currency currency = 8;
+	TaxRate tax_rate = 9;
+	int32 price_precision = 10;
+	string quantity_on_hand = 11;
+	string quantity_reserved = 12;
+	string quantity_ordered = 13;
+	string quantity_available = 14;
+	//	Schema Values
+	Currency display_currency = 15;
+	string display_price_list = 16;
+	string display_price_standard = 17;
+	string display_price_limit = 18;
+	ConversionRate conversion_rate = 19;
+}
+
+// Language Item
+message Language {
+	string language = 1;
+	string language_name = 2;
+	string language_iso = 3;
+	string country_code = 4;
+	bool is_base_language = 5;
+	bool is_system_language = 6;
+	bool is_decimal_point = 7;
+	string date_pattern = 8;
+	string time_pattern = 9;
+}
+
+//	Price List
+message PriceList {
+	int32 id = 1;
+	string uuid = 2;
+	string name = 3;
+	string description = 4;
+	Currency currency = 5;
+	bool is_default = 6;
+	bool is_tax_included = 7;
+	bool is_enforce_price_limit = 8;
+	bool is_net_price = 9;
+	bool is_sales_transaction = 10;
+	int32 price_precision = 11;
+}
+message GetPriceListRequest {
+	int32 id = 1;
+}
+
+//	Bank Account
+enum BankAccountType {
+	CHECKING = 0;
+	SAVINGS = 1;
+}
+message BankAccount {
+	int32 id = 1;
+	string name = 2;
+	string account_no = 3;
+	string description = 4;
+	Currency currency = 5;
+	string bban = 6;
+	string iban = 7;
+	string credit_limit = 8;
+	string current_balance = 9;
+	bool is_default = 10;
+	BusinessPartner business_partner = 11;
+	BankAccountType bank_account_type = 12;
+	int32 bank_id = 13;
+}

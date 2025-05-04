@@ -1,0 +1,321 @@
+/************************************************************************************
+ * Copyright (C) 2018-present E.R.P. Consultores y Asociados, C.A.                  *
+ * Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com                     *
+ * This program is free software: you can redistribute it and/or modify             *
+ * it under the terms of the GNU General Public License as published by             *
+ * the Free Software Foundation, either version 2 of the License, or                *
+ * (at your option) any later version.                                              *
+ * This program is distributed in the hope that it will be useful,                  *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                   *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                     *
+ * GNU General Public License for more details.                                     *
+ * You should have received a copy of the GNU General Public License                *
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.            *
+ ************************************************************************************/
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.spin.backend.grpc.dashboarding";
+option java_outer_classname = "ADempiereDashboarding";
+
+import "google/api/annotations.proto";
+import "google/protobuf/struct.proto";
+
+import "dictionary.proto";
+
+package dashboarding;
+
+//	All related to Dashboarding
+service Dashboarding {
+	//	Request Dashboards Content Edit
+	rpc ListDashboards(ListDashboardsRequest) returns (ListDashboardsResponse) {
+		option (google.api.http) = { get: "/dashboarding/dashboards" };
+	}
+	//	Get Metrics
+	rpc GetMetrics(GetMetricsRequest) returns (Metrics) {
+		option (google.api.http) = { get: "/dashboarding/dashboards/{id}/metrics" };
+	}
+	//	Request Favorites
+	rpc ListFavorites(ListFavoritesRequest) returns (ListFavoritesResponse) {
+		option (google.api.http) = { get: "/dashboarding/favorites" };
+	}
+	//	Request Document Statuses
+	rpc ListPendingDocuments(ListPendingDocumentsRequest) returns (ListPendingDocumentsResponse) {
+		option (google.api.http) = { get: "/dashboarding/pending-documents" };
+	}
+	// NotificationWindowChart
+	rpc ListNotifications(ListNotificationsRequest) returns (ListNotificationsResponse) {
+		option (google.api.http) = { get: "/dashboarding/notifications" };
+	}
+	// Custom Window Metrics
+	rpc ExistsWindowDashboards(ExistsWindowDashboardsRequest) returns (ExistsWindowDashboardsResponse) {
+		option (google.api.http) = { get: "/dashboarding/dashboards/windows/{window_id}/exists" };
+	}
+	rpc ListWindowDashboards(ListWindowDashboardsRequest) returns (ListWindowDashboardsResponse) {
+		option (google.api.http) = { get: "/dashboarding/dashboards/windows/{window_id}" };
+	}
+	rpc GetWindowMetrics(GetWindowMetricsRequest) returns (WindowMetrics) {
+		option (google.api.http) = { get: "/dashboarding/dashboards/windows/metrics/{id}/{table_name}/{record_id}" };
+	}
+}
+
+// Dashboard
+message Dashboard {
+	int32 id = 1;
+	string name = 2;
+	string description = 3;
+	string file_name = 4;
+	string dashboard_type = 5;
+	string chart_type = 6;
+	int32 sequence = 7;
+	string html = 8;
+	int32 column_no = 9;
+	int32 line_no = 10;
+	bool is_collapsible = 11;
+	bool is_open_by_default = 12;
+	bool is_event_required = 13;
+	int32 browser_id = 14;
+	int32 window_id = 15;
+}
+
+// Dashboards Request
+message ListDashboardsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+}
+
+//	Dashboards List
+message ListDashboardsResponse {
+	int64 record_count = 1;
+	repeated Dashboard dashboards = 2;
+	string next_page_token = 3;
+}
+
+// Favorites Items Request
+message ListFavoritesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+}
+
+// Recent Item
+message Favorite {
+	int32 menu_id = 1;
+	string menu_name = 2;
+	string menu_description = 3;
+	int32 reference_id = 4;
+	string action = 5;
+}
+
+//	Recent Items List
+message ListFavoritesResponse {
+	int64 record_count = 1;
+	repeated Favorite favorites = 2;
+	string next_page_token = 3;
+}
+
+// Document Statuses Request
+message ListPendingDocumentsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+}
+
+//	Recent Items List
+message ListPendingDocumentsResponse {
+	int64 record_count = 1;
+	repeated PendingDocument pending_documents = 2;
+	string next_page_token = 3;
+}
+
+// Recent Item
+message PendingDocument {
+	int32 window_id = 1;
+	int32 tab_id = 2;
+	string table_name = 3;
+	int32 form_id = 4;
+	string document_name = 5;
+	string document_description = 6;
+	int32 sequence = 7;
+	int64 record_count = 8;
+	string record_reference_uuid = 9;
+}
+
+// Metrics Request
+message GetMetricsRequest {
+	int32 id = 1;
+}
+
+// Metrics
+message Metrics {
+	int32 id = 1;
+	string name = 2;
+	string description = 3;
+	string x_axis_label = 4;
+	string y_axis_label = 5;
+	string measure_target = 6;
+	string measure_actual = 7;
+	string performance_goal = 8;
+	repeated ColorSchema color_schemas = 9;
+	repeated ChartSerie series = 10;
+}
+
+//	Serie
+message ChartSerie {
+	string name = 1;
+	repeated ChartData data_set = 2;
+}
+
+//	Data of Chart
+message ChartData {
+	string name = 1;
+	string value = 2;
+}
+
+//	Color Schema
+message ColorSchema {
+	string name = 1;
+	string color = 2;
+	string percent = 3;
+}
+
+enum Action {
+	WINDOW = 0;
+	PROCESS = 1;
+	REPORT = 2;
+	BROWSER = 3;
+	FORM = 4;
+	WORKFLOW = 5;
+}
+
+message Notification {
+	string name = 1;
+	string description = 2;
+	int32 quantity = 3;
+	Action action = 4;
+	int32 action_id = 5;
+}
+
+message ListNotificationsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+}
+
+message ListNotificationsResponse {
+	int64 record_count = 1;
+	repeated Notification notifications = 2;
+	string next_page_token = 3;
+}
+
+
+
+// Window Chart
+message ExistsWindowDashboardsRequest {
+	int32 window_id = 1;
+	int32 tab_id = 2;
+}
+
+message ExistsWindowDashboardsResponse {
+	int32 record_count = 1;
+}
+
+message WindowDashboardParameter {
+	int32 id = 1;
+	string name = 2;
+	string description = 3;
+	string help = 4;
+	int32 sequence = 5;
+	string column_name = 6;
+	string column_sql = 7;
+	int32 element_id = 8;
+	int32 field_id = 9;
+	bool is_mandatory = 10;
+	bool is_range = 11;
+	string default_value = 12;
+	int32 display_type = 13;
+	string v_format = 14;
+	string value_min = 15;
+	string value_max = 16;
+	string display_logic = 17;
+	string read_only_logic = 18;
+	// External Info
+	dictionary.Reference reference = 19;
+}
+
+message WindowDashboard {
+	int32 id = 1;
+	string name = 2;
+	string description = 3;
+	int32 sequence = 4;
+	bool is_collapsible = 5;
+	bool is_open_by_default = 6;
+	string dashboard_type = 7;
+	string chart_type = 8;
+	repeated string context_column_names = 9;
+	string transformation_script = 10;
+	repeated WindowDashboardParameter parameters = 11;
+}
+
+message ListWindowDashboardsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 window_id = 8;
+	int32 tab_id = 9;
+}
+
+message ListWindowDashboardsResponse {
+	int64 record_count = 1;
+	repeated WindowDashboard records = 2;
+	string next_page_token = 3;
+}
+
+// Window Metrics
+message WindowMetrics {
+	int32 id = 1;
+	string name = 2;
+	string description = 3;
+	string x_axis_label = 4;
+	string y_axis_label = 5;
+	string measure_target = 6;
+	string measure_actual = 7;
+	string performance_goal = 8;
+	repeated ColorSchema color_schemas = 9;
+	repeated ChartSerie series = 10;
+}
+
+message GetWindowMetricsRequest {
+	int32 id = 1;
+	string table_name = 2;
+	int32 record_id = 3;
+	//	Filters
+	string filters = 4;
+	string sort_by = 5;
+	repeated string group_columns = 6;
+	repeated string select_columns = 7;
+	int32 page_size = 8;
+	string page_token = 9;
+	google.protobuf.Struct context_attributes = 10;
+}

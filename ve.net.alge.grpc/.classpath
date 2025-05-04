@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="lib" path="lib/activation.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/activemq-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/activemq-protobuf.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/adempiere-dashboard-improvements.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/adempiere-grpc-utils.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/adempiere-jwt-token.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/animal-sniffer-annotations.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/annotations.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-launcher.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/aopalliance.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/api-common.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/auto-value-annotations.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/aws-java-sdk-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/aws-java-sdk-kms.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/aws-java-sdk-s3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/barbecue.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/bcmail-jdk14.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/bcpkix-jdk15on.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/bcprov-jdk14.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/bcprov-jdk15on.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/bsh.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/checker-qual.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-beanutils.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-codec.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-collections.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-collections4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-digester.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-io.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-logging.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-net.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-validator.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cron4j.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/curvesapi.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/error_prone_annotations.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/failureaccess.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/geronimo-j2ee-management_1.1_spec.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/geronimo-jms_1.1_spec.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/grpc-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/grpc-context.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/grpc-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/grpc-netty-shaded.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/grpc-protobuf.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/grpc-protobuf-lite.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/grpc-services.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/grpc-stub.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/grpc-util.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gson.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/guava.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/harness.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/hawtbuf.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/hawtdispatch.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/hawtdispatch-transport.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/HikariCP.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/httpclient.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/httpcore.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/io.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/itext.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/itext-carriage.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/itextpdf.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/itext-pdfa.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/j2objc-annotations.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-annotations.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-databind.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-dataformat-cbor.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jasypt.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javaee-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javax.annotation-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javax.mail.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jcommon.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jfreechart.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jjwt-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jjwt-impl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jjwt-jackson.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jmespath-java.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/joda-time.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jsr305.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/kahadb.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/kernel.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/listenablefuture.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/looks.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mariadb-java-client.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mqtt-client.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mysql-connector-java.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ojdbc6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ons.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/oraclepki.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/osdt_cert.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/osdt_core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/pdfa.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/perfmark-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/poi.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/poi-ooxml.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/poi-ooxml-schemas.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/postgresql.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/protobuf-java.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/protobuf-javalite.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/protobuf-java-util.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/proto-google-common-protos.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sardine.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/simplefan.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/slf4j-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-aop.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-asm.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-beans.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-context.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-expression.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/stax-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/tools.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ucp.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/vavr.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/vavr-match.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xml-apis.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xmlbeans.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" output="target/classes" path="src/main/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="target/classes" path="target/generated-sources/protobuf/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="target/classes" path="target/generated-sources/protobuf/grpc-java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="optional" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/proto">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="optional" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="**" kind="src" output="target/test-classes" path="src/test/resources">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="optional" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>

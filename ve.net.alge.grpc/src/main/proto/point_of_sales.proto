@@ -1,0 +1,2180 @@
+/************************************************************************************
+ * Copyright (C) 2012-present E.R.P. Consultores y Asociados, C.A.                  *
+ * Contributor(s): Yamel Senih ysenih@erpya.com                                     *
+ * This program is free software: you can redistribute it and/or modify             *
+ * it under the terms of the GNU General Public License as published by             *
+ * the Free Software Foundation, either version 2 of the License, or                *
+ * (at your option) any later version.                                              *
+ * This program is distributed in the hope that it will be useful,                  *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                   *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                     *
+ * GNU General Public License for more details.                                     *
+ * You should have received a copy of the GNU General Public License                *
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.            *
+ ************************************************************************************/
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.spin.backend.grpc.pos";
+option java_outer_classname = "ADempierePOS";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+import "base_data_type.proto";
+import "core_functionality.proto";
+import "file_management.proto";
+import "time_control.proto";
+
+// Base URL
+// /point-of-sales/
+
+package data;
+
+//	POS Service used for ADempiere integration 
+service Store {
+	//	Get POS Definition
+	rpc GetPointOfSales(PointOfSalesRequest) returns (PointOfSales) {
+		option (google.api.http) = { get: "/point-of-sales/terminals/{id}" };
+	}
+	//	List Point of Sales
+	rpc ListPointOfSales(ListPointOfSalesRequest) returns (ListPointOfSalesResponse) {
+		option (google.api.http) = { get: "/point-of-sales/terminals" };
+	}
+	//	Get Product Price from Code / UPC / Name
+	rpc GetProductPrice(GetProductPriceRequest) returns (core_functionality.ProductPrice) {
+		option (google.api.http) = {
+			get: "/point-of-sales/{pos_id}/product-prices/{search_value}"
+			additional_bindings: {
+				get: "/point-of-sales/{pos_id}/product-prices/upc/{upc}"
+			}
+			additional_bindings: {
+				get: "/point-of-sales/{pos_id}/product-prices/sku/{sku}"
+			}
+			additional_bindings: {
+				get: "/point-of-sales/{pos_id}/product-prices/value/{value}"
+			}
+			additional_bindings: {
+				get: "/point-of-sales/{pos_id}/product-prices/name/{name}"
+			}
+		};
+	}
+	//	List Product Price
+	rpc ListProductPrice(ListProductPriceRequest) returns (ListProductPriceResponse) {
+		option (google.api.http) = {
+			get: "/point-of-sales/{pos_id}/product-prices"
+		};
+	}
+
+	//	Order
+	rpc CreateOrder(CreateOrderRequest) returns (Order) {
+		option (google.api.http) = {
+			post: "/point-of-sales/{pos_id}/orders",
+			body: "*"
+		};
+	}
+	rpc GetOrder(GetOrderRequest) returns (Order) {
+		option (google.api.http) = {
+			get: "/point-of-sales/{pos_id}/orders/{id}"
+		};
+	}
+	rpc ListOrders(ListOrdersRequest) returns (ListOrdersResponse) {
+		option (google.api.http) = {
+			get: "/point-of-sales/{pos_id}/orders"
+		};
+	}
+	rpc UpdateOrder(UpdateOrderRequest) returns (Order) {
+		option (google.api.http) = {
+			put: "/point-of-sales/{pos_id}/orders/{id}",
+			body: "*"
+		};
+	}
+	rpc ReleaseOrder(ReleaseOrderRequest) returns (Order) {
+		option (google.api.http) = {
+			put: "/point-of-sales/{pos_id}/orders/{id}/release",
+			body: "*"
+		};
+	}
+	rpc HoldOrder(HoldOrderRequest) returns (Order) {
+		option (google.api.http) = {
+			put: "/point-of-sales/{pos_id}/orders/{id}/hold",
+			body: "*"
+		};
+	}
+	rpc DeleteOrder(DeleteOrderRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = { delete: "/point-of-sales/{pos_id}/orders/{id}" };
+	}
+
+	//	Order Line
+	rpc CreateOrderLine(CreateOrderLineRequest) returns (OrderLine) {
+		option (google.api.http) = {
+			post: "/point-of-sales/{pos_id}/orders/{order_id}/lines",
+			body: "*"
+		};
+	}
+	rpc ListOrderLines(ListOrderLinesRequest) returns (ListOrderLinesResponse) {
+		option (google.api.http) = {
+			get: "/point-of-sales/{pos_id}/orders/{order_id}/lines"
+		};
+	}
+	rpc UpdateOrderLine(UpdateOrderLineRequest) returns (OrderLine) {
+		option (google.api.http) = {
+			put: "/point-of-sales/{pos_id}/orders/{order_id}/lines/{id}",
+			body: "*"
+		};
+	}
+	rpc DeleteOrderLine(DeleteOrderLineRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = { delete: "/point-of-sales/{pos_id}/orders/{order_id}/lines/{id}" };
+	}
+
+	//	Get a Key Layout
+	rpc GetKeyLayout(GetKeyLayoutRequest) returns (KeyLayout) {
+		option (google.api.http) = { get: "/point-of-sales/{pos_id}/key-layouts" };
+	}
+	//	Payments
+	//	Create Payment
+	rpc CreatePayment(CreatePaymentRequest) returns (Payment) {
+		option (google.api.http) = {
+			post: "/point-of-sales/{pos_id}/payments",
+			body: "*"
+		};
+	}
+	//	Update Payment
+	rpc UpdatePayment(UpdatePaymentRequest) returns (Payment) {
+		option (google.api.http) = {
+			put: "/point-of-sales/{pos_id}/payments/{id}",
+			body: "*"
+		};
+	}
+	//	Delete Payment
+	rpc DeletePayment(DeletePaymentRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = { delete: "/point-of-sales/{pos_id}/payments/{id}" };
+	}
+	//	List Payments
+	rpc ListPayments(ListPaymentsRequest) returns (ListPaymentsResponse) {
+		option (google.api.http) = { get: "/point-of-sales/{pos_id}/payments" };
+	}
+	//	Process Order
+	rpc ProcessOrder(ProcessOrderRequest) returns (Order) {
+		option (google.api.http) = {
+			put: "/point-of-sales/{pos_id}/orders/{id}/process",
+			body: "*"
+		};
+	}
+	//	Validate PIN
+	rpc ValidatePIN(ValidatePINRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = {
+			post: "/point-of-sales/{pos_id}/validate-pin",
+			body: "*"
+		};
+	}
+	//	List of Available Warehouses
+	rpc ListAvailableWarehouses(ListAvailableWarehousesRequest) returns (ListAvailableWarehousesResponse) {
+		option (google.api.http) = { get: "/point-of-sales/{pos_id}/warehouses" };
+	}
+	//	List of Available Tender Types
+	rpc ListAvailablePaymentMethods(ListAvailablePaymentMethodsRequest) returns (ListAvailablePaymentMethodsResponse) {
+		option (google.api.http) = { get: "/point-of-sales/{pos_id}/payment-methods" };
+	}
+	//	List of Available Price List
+	rpc ListAvailablePriceList(ListAvailablePriceListRequest) returns (ListAvailablePriceListResponse) {
+		option (google.api.http) = { get: "/point-of-sales/{pos_id}/price-lists" };
+	}
+	//	List of Available Currencies
+	rpc ListAvailableCurrencies(ListAvailableCurrenciesRequest) returns (ListAvailableCurrenciesResponse) {
+		option (google.api.http) = { get: "/point-of-sales/{pos_id}/currencies" };
+	}
+	//	List of Available Document Types
+	rpc ListAvailableDocumentTypes(ListAvailableDocumentTypesRequest) returns (ListAvailableDocumentTypesResponse) {
+		option (google.api.http) = { get: "/point-of-sales/{pos_id}/document-types" };
+	}
+	//	List of Available Discounts
+	rpc ListAvailableDiscounts(ListAvailableDiscountsRequest) returns (ListAvailableDiscountsResponse) {
+		option (google.api.http) = { get: "/point-of-sales/{pos_id}/discounts" };
+	}
+	//	List of Available Sellers
+	rpc ListAvailableSellers(ListAvailableSellersRequest) returns (ListAvailableSellersResponse) {
+		option (google.api.http) = { get: "/point-of-sales/{pos_id}/sellers" };
+	}
+
+	//	Customer
+	rpc CreateCustomer(CreateCustomerRequest) returns (Customer) {
+		option (google.api.http) = {
+			post: "/point-of-sales/customers",
+			body: "*"
+		};
+	}
+	rpc GetCustomer(GetCustomerRequest) returns (Customer) {
+		option (google.api.http) = {
+			get: "/point-of-sales/customers/{search_value}"
+			additional_bindings: {
+				get: "/point-of-sales/customers/id/{id}"
+			}
+		};
+	}
+	rpc ListCustomers(ListCustomersRequest) returns (ListCustomersResponse) {
+		option (google.api.http) = { get: "/point-of-sales/customers" };
+	}
+	rpc UpdateCustomer(UpdateCustomerRequest) returns (Customer) {
+		option (google.api.http) = {
+			put: "/point-of-sales/customers/{id}",
+			body: "*"
+		};
+	}
+	rpc ListCustomerTemplates(ListCustomerTemplatesRequest) returns (ListCustomerTemplatesResponse) {
+		option (google.api.http) = {
+			get: "/point-of-sales/{pos_id}/customers/templates"
+		};
+	}
+
+	//	Get Daily Refund
+	rpc GetAvailableRefund(GetAvailableRefundRequest) returns (AvailableRefund) {
+		option (google.api.http) = { get: "/point-of-sales/{pos_id}/available-refunds" };
+	}
+	//	Print Ticket
+	rpc PrintTicket(PrintTicketRequest) returns (PrintTicketResponse) {
+		option (google.api.http) = {
+			post: "/point-of-sales/{pos_id}/print-ticket",
+			body: "*"
+		};
+	}
+	//	Print Preview
+	rpc PrintPreview(PrintPreviewRequest) returns (PrintPreviewResponse) {
+		option (google.api.http) = {
+			post: "/point-of-sales/{pos_id}/print-preview",
+			body: "*"
+		};
+	}
+
+	// Bank
+	rpc ListBanks(ListBanksRequest) returns (ListBanksResponse) {
+		option (google.api.http) = { get: "/point-of-sales/{pos_id}/banks" };
+	}
+	rpc GetBank(GetBankRequest) returns (Bank) {
+		option (google.api.http) = { get: "/point-of-sales/{pos_id}/banks/{id}" };
+	}
+	rpc ListBankAccounts(ListBankAccountsRequest) returns (ListBankAccountsResponse) {
+		option (google.api.http) = { get: "/point-of-sales/{pos_id}/banks/{bank_id}/bank-accounts" };
+	}
+	rpc GetBankAccount(GetBankAccountRequest) returns (Bank) {
+		option (google.api.http) = {
+			get: "/point-of-sales/{pos_id}/banks/{bank_id}/bank-accounts/{id}"
+			additional_bindings: {
+				get: "/point-of-sales/{pos_id}/banks/bank-accounts/{id}"
+			}
+		};
+	}
+
+	//	Create Customer Account
+	rpc CreateCustomerBankAccount(CreateCustomerBankAccountRequest) returns (CustomerBankAccount) {
+		option (google.api.http) = {
+			post: "/point-of-sales/{pos_id}/customers/{customer_id}/bank-accounts",
+			body: "*"
+		};
+	}
+	//	Update Customer Account
+	rpc UpdateCustomerBankAccount(UpdateCustomerBankAccountRequest) returns (CustomerBankAccount) {
+		option (google.api.http) = {
+			put: "/point-of-sales/{pos_id}/customers/{customer_id}/bank-accounts/{id}",
+			body: "*"
+		};
+	}
+	//	Get Customer Account
+	rpc GetCustomerBankAccount(GetCustomerBankAccountRequest) returns (CustomerBankAccount) {
+		option (google.api.http) = { get: "/point-of-sales/{pos_id}/customers/{customer_id}/bank-accounts/{id}" };
+	}
+	//	Delete Customer Account
+	rpc DeleteCustomerBankAccount(DeleteCustomerBankAccountRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = { delete: "/point-of-sales/{pos_id}/customers/{customer_id}/bank-accounts/{id}" };
+	}
+	//	List Customer Accounts
+	rpc ListCustomerBankAccounts(ListCustomerBankAccountsRequest) returns (ListCustomerBankAccountsResponse) {
+		option (google.api.http) = { get: "/point-of-sales/{pos_id}/customers/{customer_id}/bank-accounts" };
+	}
+
+	//	shipment
+	//	Create Shipment
+	rpc CreateShipment(CreateShipmentRequest) returns (Shipment) {
+		option (google.api.http) = {
+			post: "/point-of-sales/{pos_id}/shipments",
+			body: "*"
+		};
+	}
+	//	Print Preview for Shipment
+	rpc PrintShipmentPreview(PrintShipmentPreviewRequest) returns (PrintShipmentPreviewResponse) {
+		option (google.api.http) = {
+			post: "/point-of-sales/{pos_id}/shipments/{shipment_id}/print-preview",
+			body: "*"
+		};
+	}
+	//	Delete Shipment
+	rpc DeleteShipment(DeleteShipmentRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = { delete: "/point-of-sales/{pos_id}/shipments" };
+	}
+	//	Create Shipment Line
+	rpc CreateShipmentLine(CreateShipmentLineRequest) returns (ShipmentLine) {
+		option (google.api.http) = {
+			post: "/point-of-sales/{pos_id}/shipments/{shipment_id}/lines",
+			body: "*"
+		};
+	}
+	//	Delete Shipment Line
+	rpc DeleteShipmentLine(DeleteShipmentLineRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = { delete: "/point-of-sales/{pos_id}/shipments/{shipment_id}/lines/{id}" };
+	}
+	//	Update Order Line
+	rpc UpdateShipmentLine(UpdateShipmentLineRequest) returns (ShipmentLine) {
+		option (google.api.http) = {
+			put: "/point-of-sales/{pos_id}/shipments/{shipment_id}/lines/{id}",
+			body: "*"
+		};
+	}
+	//	List Shipment Line
+	rpc ListShipmentLines(ListShipmentLinesRequest) returns (ListShipmentLinesResponse) {
+		option (google.api.http) = { get: "/point-of-sales/{pos_id}/shipments/{shipment_id}/lines" };
+	}
+	//	Process Shipment
+	rpc ProcessShipment(ProcessShipmentRequest) returns (Shipment) {
+		option (google.api.http) = {
+			put: "/point-of-sales/{pos_id}/shipments/{id}/process",
+			body: "*"
+		};
+	}
+	//	Return Order
+	//	Reverse Sales Transaction
+	rpc ReverseSales(ReverseSalesRequest) returns (Order) {
+		option (google.api.http) = {
+			put: "/point-of-sales/{pos_id}/orders/{id}/reverse",
+			body: "*"
+		};
+	}
+	//	Cash Management
+	rpc ProcessCashOpening(CashOpeningRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = {
+			put: "/point-of-sales/{pos_id}/cash/process-opening",
+			body: "*"
+		};
+	}
+	//	Cash Withdrawal
+	rpc ProcessCashWithdrawal(CashWithdrawalRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = {
+			put: "/point-of-sales/cash/process-withdrawal",
+			body: "*"
+		};
+	}
+	//	Cash Closing
+	rpc ProcessCashClosing(CashClosingRequest) returns (CashClosing) {
+		option (google.api.http) = {
+			put: "/point-of-sales/cash/closings/{id}/process",
+			body: "*"
+		};
+	}
+	//	List all cash movements
+	rpc ListCashMovements(ListCashMovementsRequest) returns (ListCashMovementsResponse) {
+		option (google.api.http) = { get: "/point-of-sales/cash/movements" };
+	}
+	//	List Cash Summary
+	rpc ListCashSummaryMovements(ListCashSummaryMovementsRequest) returns (ListCashSummaryMovementsResponse) {
+		option (google.api.http) = { get: "/point-of-sales/cash/summary-movements" };
+	}
+	//	Allocate Seller
+	rpc AllocateSeller(AllocateSellerRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = {
+			put: "/point-of-sales/terminals/{pos_id}/allocate-seller",
+			body: "*"
+		};
+	}
+	//	Allocate Seller
+	rpc DeallocateSeller(DeallocateSellerRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = {
+			put: "/point-of-sales/terminals/{pos_id}/deallocate-seller",
+			body: "*"
+		};
+	}
+	//	Create Refund Reference
+	rpc CreatePaymentReference(CreatePaymentReferenceRequest) returns (PaymentReference) {
+		option (google.api.http) = {
+			post: "/point-of-sales/orders/{order_id}/references",
+			body: "*"
+		};
+	}
+	//	Delete Refund Reference
+	rpc DeletePaymentReference(DeletePaymentReferenceRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = { delete: "/point-of-sales/orders/{order_id}/references/{id}" };
+	}
+	//	List Refund References
+	rpc ListPaymentReferences(ListPaymentReferencesRequest) returns (ListPaymentReferencesResponse) {
+		option (google.api.http) = { get: "/point-of-sales/references" };
+	}
+	//  List Stock: GET /api/stocks
+	rpc ListStocks(ListStocksRequest) returns (ListStocksResponse) {
+		option (google.api.http) = { get: "/point-of-sales/terminals/{pos_id}/stocks" };
+	}
+	//  List Available Cash 
+	rpc ListAvailableCash(ListAvailableCashRequest) returns (ListAvailableCashResponse) {
+		option (google.api.http) = { get: "/point-of-sales/terminals/{pos_id}/cashs" };
+	}
+	// Command Shortcut
+	rpc SaveCommandShortcut(SaveCommandShortcutRequest) returns (CommandShortcut) {
+		option (google.api.http) = {
+			post: "/point-of-sales/terminals/{pos_id}/shortcuts",
+			body: "*"
+		};
+	}
+	rpc ListCommandShortcuts(ListCommandShortcutsRequest) returns (ListCommandShortcutsResponse) {
+		option (google.api.http) = { get: "/point-of-sales/terminals/{pos_id}/shortcuts" };
+	}
+	rpc DeleteCommandShortcut(DeleteCommandShortcutRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = { delete: "/point-of-sales/terminals/{pos_id}/shortcuts/{id}" };
+	}
+	// Campaign
+	rpc ListCampaigns(ListCampaignsRequest) returns (ListCampaignsResponse) {
+		option (google.api.http) = { get: "/point-of-sales/terminals/{pos_id}/campaigns" };
+	}
+	//	Copy Order
+	rpc CopyOrder(CopyOrderRequest) returns (Order) {
+		option (google.api.http) = {
+			post: "/point-of-sales/orders/{source_order_id}/copy",
+			body: "*"
+		};
+	}
+	//	Return
+	//	Create Return
+	rpc CreateRMA(CreateRMARequest) returns (RMA) {
+		option (google.api.http) = {
+			post: "/point-of-sales/returns",
+			body: "*"
+		};
+	}
+	//	Delete Return
+	rpc DeleteRMA(DeleteRMARequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = { delete: "/point-of-sales/returns/{id}" };
+	}
+	//	Create Return Line
+	rpc CreateRMALine(CreateRMALineRequest) returns (RMALine) {
+		option (google.api.http) = {
+			post: "/point-of-sales/returns/{rma_id}/lines",
+			body: "*"
+		};
+	}
+	//	Delete Return Line
+	rpc DeleteRMALine(DeleteRMALineRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = { delete: "/point-of-sales/returns/{rma_id}/lines/{id}" };
+	}
+	//	Update RMA Line
+	rpc UpdateRMALine(UpdateRMALineRequest) returns (RMALine) {
+		option (google.api.http) = {
+			put: "/point-of-sales/returns/{rma_id}/lines/{id}",
+			body: "*"
+		};
+	}
+	//	List Return Line
+	rpc ListRMALines(ListRMALinesRequest) returns (ListRMALinesResponse) {
+		option (google.api.http) = { get: "/point-of-sales/returns/{rma_id}/lines" };
+	}
+	//	Process Return
+	rpc ProcessRMA(ProcessRMARequest) returns (RMA) {
+		option (google.api.http) = {
+			put: "/point-of-sales/returns/{rma_id}/process",
+			body: "*"
+		};
+	}
+	//	Create Order from RMA
+	rpc CreateOrderFromRMA(CreateOrderFromRMARequest) returns (Order) {
+		option (google.api.http) = {
+			post: "/point-of-sales/returns/{source_rma_id}/create-order",
+			body: "*"
+		};
+	}
+	//	Credit Memo as Payment Method
+	//	List Refund References
+	rpc ListCustomerCredits(ListCustomerCreditsRequest) returns (ListCustomerCreditsResponse) {
+		option (google.api.http) = { get: "/point-of-sales/{pos_id}/customers/{customer_id}/credits" };
+	}
+}
+
+//	Delete Refund reference request
+message DeletePaymentReferenceRequest {
+	int32 id = 1;
+	int32 pos_id = 2;
+	int32 order_id = 3;
+}
+
+//	Allocate Seller Request
+message AllocateSellerRequest {
+	int32 pos_id = 1;
+	int32 sales_representative_id = 2;
+}
+
+//	Deallocate Seller Request
+message DeallocateSellerRequest {
+	int32 pos_id = 1;
+	int32 sales_representative_id = 2;
+}
+
+//	List allocated sellers for POS
+message ListAvailableSellersRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	bool is_only_allocated = 8;
+	int32 pos_id = 9;
+}
+
+//	Discounts Response
+message ListAvailableSellersResponse {
+	int64 record_count = 1;
+	repeated AvailableSeller sellers = 2;
+	string next_page_token = 3;
+}
+
+// Available Discounts
+message AvailableSeller {
+	int32 id = 1;
+	string key = 2;
+	string name = 3;
+	bool is_pos_required_pin = 4;
+	string description = 5;
+	string comments = 6;
+	string image = 7;
+}
+
+//	Refund reference request
+message CreatePaymentReferenceRequest {
+	int32 pos_id = 1;
+	int32 sales_representative_id = 2;
+	string description = 3;
+	string source_amount = 4;
+	string amount = 5;
+	google.protobuf.Timestamp payment_date = 6;
+	string tender_type_code = 7;
+	int32 currency_id = 8;
+	int32 conversion_type_id = 9;
+	int32 payment_method_id = 10;
+	google.protobuf.Timestamp payment_account_date = 11;
+	int32 customer_bank_account_id = 12;
+	int32 order_id = 13;
+	int32 customer_id = 14;
+	bool is_receipt = 15;
+	int32 invoice_reference_id = 16;
+}
+
+//	Refund Reference
+message PaymentReference {
+	int32 id = 1;
+	int32 pos_id = 2;
+	core_functionality.SalesRepresentative sales_representative = 3;
+	string description = 4;
+	string amount = 5;
+	google.protobuf.Timestamp payment_date = 6;
+	string tender_type_code = 7;
+	core_functionality.Currency currency = 8;
+	PaymentMethod payment_method = 9;
+	google.protobuf.Timestamp payment_account_date = 10;
+	int32 customer_bank_account_id = 11;
+	int32 order_id = 12;
+	bool is_paid = 13;
+	bool is_receipt = 14;
+	string source_amount = 15;
+	bool is_automatic = 16;
+	bool is_processed = 17;
+	string converted_amount = 18;
+	int32 invoice_reference_id = 19;
+}
+
+//	List Refund Reference Request
+message ListPaymentReferencesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 pos_id = 8;
+	int32 customer_id = 9;
+	int32 order_id = 10;
+}
+
+//	List Refund Reference Response
+message ListPaymentReferencesResponse {
+	int64 record_count = 1;
+	repeated PaymentReference payment_references = 2;
+	string next_page_token = 3;
+}
+
+//	Payment Summary
+message PaymentSummary {
+	int32 payment_method_id = 1;
+	string payment_method_name = 2;
+	string tender_type_code = 3;
+	core_functionality.Currency currency = 4;
+	bool is_refund = 5;
+	string amount = 6;
+}
+
+//	List Cash Movements Request
+message ListCashMovementsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 pos_id = 8;
+	int32 business_partner_id = 9;
+	bool is_only_processed = 10;
+	bool is_only_refund = 11;
+	int32 sales_representative_id = 12;
+}
+
+//	List cash movements
+message ListCashMovementsResponse {
+	int64 record_count = 1;
+	repeated Payment cash_movements = 2;
+	string next_page_token = 3;
+	// header values
+	int32 id = 4;
+}
+
+//	List Cash Summary Movements Request
+message ListCashSummaryMovementsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 pos_id = 8;
+	bool is_only_processed = 9;
+	bool is_only_refund = 10;
+}
+
+//	List cash summary movements
+message ListCashSummaryMovementsResponse {
+	int64 record_count = 1;
+	int32 id = 2;
+	repeated PaymentSummary cash_movements = 3;
+	string next_page_token = 4;
+}
+
+//	Cash closing
+message CashClosing {
+	int32 id = 1;
+	string document_no = 2;
+	core_functionality.DocumentType document_type = 3;
+	DocumentStatus document_status = 4;
+	string description = 5;
+}
+
+//	Request for create cash closing
+message CashClosingRequest {
+	int32 pos_id = 1;
+	int32 id = 2;
+	int32 collecting_agent_id = 3;
+	string description = 4;
+}
+
+//	Request for create cash withdrawal
+message CashWithdrawalRequest {
+	int32 pos_id = 1;
+	int32 collecting_agent_id = 2;
+	string description = 3;
+}
+
+//	Request for create cash opening
+message CashOpeningRequest {
+	int32 pos_id = 1;
+	int32 collecting_agent_id = 2;
+	string description = 3;
+}
+
+// Request for create a Shipment from Order
+message CreateShipmentRequest {
+	int32 order_id = 1;
+	int32 sales_representative_id = 2;
+	int32 pos_id = 3;
+	bool is_create_lines_from_order = 4;
+}
+
+// Request for create a Shipment from Order
+message GetOpenShipmentRequest {
+	int32 order_id = 1;
+	int32 pos_id = 2;
+}
+
+// Request for delete a Shipment
+message DeleteShipmentRequest {
+	int32 shipment_id = 1;
+	int32 pos_id = 2;
+}
+
+// Request for delete a Shipment Line
+message DeleteShipmentLineRequest {
+	int32 shipment_id = 1;
+	int32 id = 2;
+	int32 pos_id = 3;
+}
+
+// Request for delete a Shipment Line
+message UpdateShipmentLineRequest {
+	int32 shipment_id = 1;
+	int32 id = 2;
+	string description = 3;
+	string quantity = 4;
+	int32 pos_id = 5;
+}
+
+// Request for Create a Shipment Line
+message CreateShipmentLineRequest {
+	int32 shipment_id = 1;
+	int32 order_line_id = 2;
+	string description = 3;
+	string quantity = 4;
+	int32 pos_id = 5;
+}
+
+//	List Shipment Lines Request
+message ListShipmentLinesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 shipment_id = 8;
+	int32 pos_id = 9;
+}
+
+//	List shipment Lines
+message ListShipmentLinesResponse {
+	int64 record_count = 1;
+	repeated ShipmentLine shipment_lines = 2;
+	string next_page_token = 3;
+}
+
+// Shipment
+message Shipment {
+	int32 id = 1;
+	string document_no = 2;
+	core_functionality.DocumentType document_type = 3;
+	core_functionality.SalesRepresentative sales_representative = 4;
+	DocumentStatus document_status = 5;
+	core_functionality.Warehouse warehouse = 6;
+	google.protobuf.Timestamp movement_date = 7;
+	int32 order_id = 8;
+}
+
+// Request for Process a Shipment
+message ProcessShipmentRequest {
+	int32 id = 1;
+	string description = 2;
+	string document_action = 3;
+	int32 pos_id = 4;
+}
+
+// Request for Reverse a Sales Transaction
+message ReverseSalesRequest {
+	int32 pos_id = 1;
+	int32 id = 2;
+	string description = 3;
+}
+
+// Sales Shipment Line
+message ShipmentLine {
+	int32 id = 1;
+	int32 order_line_id = 2;
+	core_functionality.Product product = 3;
+	core_functionality.Charge charge = 4;
+	string description = 5;
+	string quantity = 6;
+	string movement_quantity = 7;
+	int32 line = 8;
+	core_functionality.ProductConversion uom = 9;
+	core_functionality.ProductConversion product_uom = 10;
+}
+
+// Bank
+message Bank {
+	int32 id = 1;
+	string uuid = 2;
+	string name = 3;
+	string description = 4;
+	string routing_no = 5;
+	string swift_code = 6;
+}
+message GetBankRequest {
+	int32 id = 1;
+}
+message ListBanksRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 pos_id = 8;
+}
+message ListBanksResponse {
+	int64 record_count = 1;
+	repeated Bank records = 2;
+	string next_page_token = 3;
+}
+
+// Bank Account
+message GetBankAccountRequest {
+	int32 id = 1;
+}
+message ListBankAccountsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 bank_id = 8;
+	int32 pos_id = 9;
+}
+message ListBankAccountsResponse {
+	int64 record_count = 1;
+	repeated core_functionality.BankAccount records = 2;
+	string next_page_token = 3;
+}
+
+//	List Customer Accounts Request
+message ListCustomerBankAccountsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 customer_id = 8;
+	int32 pos_id = 9;
+	int32 bank_id = 10;
+}
+
+//	List Customer Accounts Response
+message ListCustomerBankAccountsResponse {
+	int64 record_count = 1;
+	repeated CustomerBankAccount customer_bank_accounts = 2;
+	string next_page_token = 3;
+}
+
+//	Create Customer Account
+message CreateCustomerBankAccountRequest {
+	int32 customer_id = 1;
+	int32 pos_id = 2;
+	string city = 3;
+	string country = 4;
+	string email = 5;
+	string driver_license = 6;
+	string social_security_number = 7;
+	string name = 8;
+	string state = 9;
+	string street = 10;
+	string zip = 11;
+	string bank_account_type = 12;
+	int32 bank_id = 13;
+	bool is_ach = 14;
+	string address_verified = 15;
+	string zip_verified = 16;
+	string routing_no = 17;
+	string iban = 18;
+	bool is_payroll_account = 19;
+	string account_no = 20;
+}
+
+//	Update Customer Account
+message UpdateCustomerBankAccountRequest {
+	int32 customer_bank_account_id = 1;
+	string city = 2;
+	string country = 3;
+	string email = 4;
+	string driver_license = 5;
+	string social_security_number = 6;
+	string name = 7;
+	string state = 8;
+	string street = 9;
+	string zip = 10;
+	string bank_account_type = 11;
+	int32 bank_id = 12;
+	bool is_ach = 13;
+	string address_verified = 14;
+	string zip_verified = 15;
+	string routing_no = 16;
+	string iban = 17;
+	bool is_payroll_account = 18;
+	string account_no = 19;
+	int32 pos_id = 20;
+}
+
+//	Delete Customer Account
+message DeleteCustomerBankAccountRequest {
+	int32 customer_bank_account_id = 1;
+	int32 pos_id = 2;
+}
+
+//	Get Customer Account
+message GetCustomerBankAccountRequest {
+	int32 cuatomer_id = 1;
+	int32 id = 2;
+	int32 pos_id = 3;
+}
+
+
+//	Customer Account
+message CustomerBankAccount {
+	int32 id = 1;
+	int32 customer_id = 2;
+	string city = 3;
+	string country = 4;
+	string email = 5;
+	string driver_license = 6;
+	string social_security_number = 7;
+	string name = 8;
+	string state = 9;
+	string street = 10;
+	string zip = 11;
+	string bank_account_type = 12;
+	int32 bank_id = 13;
+	bool is_ach = 14;
+	string address_verified = 15;
+	string zip_verified = 16;
+	string routing_no = 17;
+	string iban = 18;
+	bool is_payroll_account = 19;
+	string account_no = 20;
+}
+
+//	Print Ticket
+message PrintTicketRequest {
+	int32 pos_id = 1;
+	int32 order_id = 2;
+	int32 invoice_id = 3;
+	int32 shipment_id = 4;
+	int32 record_id = 5;
+	string table_name = 6;
+}
+
+//	Response after print
+message PrintTicketResponse {
+	string summary = 1;
+	bool is_error = 2;
+	string file_name = 3;
+	string mime_type = 4;
+	bytes output_stream = 5;
+	string result_type = 6;
+	google.protobuf.Value result_values = 7;
+}
+
+//	Print Preview Ticket
+message PrintPreviewRequest {
+	int32 pos_id = 1;
+	int32 order_id = 2;
+	string report_type = 3;
+}
+
+//	Response after preview
+message PrintPreviewResponse {
+	string result = 1;
+	ProcessLog process_log = 2;
+}
+
+//	Print Preview Ticket for Shipment
+message PrintShipmentPreviewRequest {
+	int32 pos_id = 1;
+	int32 shipment_id = 2;
+	string report_type = 3;
+}
+
+//	Response after preview
+message PrintShipmentPreviewResponse {
+	string result = 1;
+	ProcessLog process_log = 2;
+}
+
+//	Request Daily Refund
+message GetAvailableRefundRequest {
+	int32 pos_id = 1;
+	google.protobuf.Timestamp date = 2;
+}
+
+//	Daily Refund
+message AvailableRefund {
+	string refund = 1;
+	repeated TenderTypeRefund tender_type_refunds = 2;
+}
+
+//	Tender Type Refund
+message TenderTypeRefund {
+	string tender_type = 1;
+	string refund = 2;
+}
+
+//	Address information for request
+message AddressRequest {
+	int32 id = 1;
+	string location_name = 2;
+	string address1 = 3;
+	string address2 = 4;
+	string address3 = 5;
+	string address4 = 6;
+	int32 city_id = 7;
+	string city_name = 8;
+	string postal_code = 9;
+	string postal_code_additional = 10;
+	int32 region_id = 11;
+	int32 country_id = 12;
+	string description = 13;
+	bool is_default_billing = 14;
+	bool is_default_shipping = 15;
+	string contact_name = 16;
+	string email = 17;
+	string phone = 18;
+	google.protobuf.Struct additional_attributes = 19;
+	int32 pos_id = 20;
+}
+
+// Request for create Customer
+message CreateCustomerRequest {
+	string value = 1;
+	string tax_id = 2;
+	string duns = 3;
+	string naics = 4;
+	string name = 5;
+	string last_name = 6;
+	string description = 7;
+	int32 business_partner_group_id = 8;
+	int32 pos_id = 9;
+	//	Location
+	repeated AddressRequest addresses = 10;
+	google.protobuf.Struct additional_attributes = 11;
+	int32 customer_template_id = 12;
+}
+
+// Request for update Customer
+message UpdateCustomerRequest {
+	int32 id = 1;
+	string value = 2;
+	string tax_id = 3;
+	string duns = 4;
+	string naics = 5;
+	string name = 6;
+	string last_name = 7;
+	string description = 8;
+	//	Location
+	repeated AddressRequest addresses = 9;
+	google.protobuf.Struct additional_attributes = 10;
+	int32 pos_id = 11;
+}
+
+// Request Get a Customer
+message GetCustomerRequest {
+	int32 id = 1;
+	string search_value = 2;
+	string value = 3;
+	string name = 4;
+	string contact_name = 5;
+	string email = 6;
+	string postal_code = 7;
+	string phone = 8;
+	int32 pos_id = 9;
+}
+
+// Customer
+message Customer {
+	int32 id = 1;
+	string value = 2;
+	string tax_id = 3;
+	string duns = 4;
+	string naics = 5;
+	string name = 6;
+	string last_name = 7;
+	string description = 8;
+	repeated Address addresses = 9;
+	google.protobuf.Struct additional_attributes = 10;
+}
+
+message ListCustomersRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string value = 8;
+	string name = 9;
+	string contact_name = 10;
+	string email = 11;
+	string postal_code = 12;
+	string phone = 13;
+	int32 pos_id = 14;
+}
+
+message ListCustomersResponse {
+	int64 record_count = 1;
+	repeated Customer customers = 2;
+	string next_page_token = 3;
+}
+
+// Customer Template
+message ListCustomerTemplatesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	// custom filters
+	int32 pos_id = 8;
+}
+message CustomerTemplate {
+	int32 id = 1;
+	string key = 2;
+	string name = 3;
+	bool is_pos_required_pin = 4;
+}
+message ListCustomerTemplatesResponse {
+	int64 record_count = 1;
+	repeated CustomerTemplate customer_templates = 2;
+	string next_page_token = 3;
+}
+
+//	Address
+message Address {
+	int32 id = 1;
+	//	Location
+	string display_value = 2;
+	Region region = 3;
+	City city = 4;
+	string address1 = 5;
+	string address2 = 6;
+	string address3 = 7;
+	string address4 = 8;
+	string phone = 9;
+	string postal_code = 10;
+	string postal_code_additional = 11;
+	string country_code = 12;
+	int32 country_id = 13;
+	bool is_default_shipping = 14;
+	bool is_default_billing = 15;
+	string contact_name = 16;
+	string email = 17;
+	string location_name = 19;
+	string description = 18;
+	string reference = 20;
+	google.protobuf.Struct additional_attributes = 21;
+}
+
+//	City
+message City {
+	int32 id = 1;
+	string name = 2;
+}
+
+//	Region
+message Region {
+	int32 id = 1;
+	string name = 2;
+}
+
+
+// Available Warehouse
+message AvailableWarehouse {
+	int32 id = 1;
+	string key = 2;
+	string name = 3;
+	bool is_pos_required_pin = 4;
+}
+
+// Available Tender Type
+message AvailablePaymentMethod {
+	int32 id = 1;
+	string name = 2;
+	int32 pos_id = 3;
+	bool is_displayedfrom_collection = 4;
+	bool is_pos_required_pin = 5;
+	bool is_allowed_to_refund = 6;
+	bool is_allowed_to_refund_open = 7;
+	string maximum_refund_allowed = 8;
+	string maximum_daily_refund_allowed = 9;
+	core_functionality.Currency refund_reference_currency = 10;
+	core_functionality.Currency reference_currency = 11;
+	bool is_payment_reference = 12;
+	PaymentMethod payment_method = 13;
+	int32 document_type_id = 14;
+}
+
+message PaymentMethod {
+	int32 id = 1;
+	string value = 2;
+	string name = 3;
+	string description = 4;
+	string tender_type = 5;
+	bool is_active = 6;
+}
+
+//	List discount schema for POS
+message ListAvailableDiscountsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 pos_id = 8;
+}
+
+//	Discounts Response
+message ListAvailableDiscountsResponse {
+	int64 record_count = 1;
+	repeated AvailableDiscount discounts = 2;
+	string next_page_token = 3;
+}
+
+// Available Discounts
+message AvailableDiscount {
+	int32 id = 1;
+	string key = 2;
+	string name = 3;
+	bool is_pos_required_pin = 4;
+}
+
+// Available Document Type
+message AvailableDocumentType {
+	int32 id = 1;
+	string key = 2;
+	string name = 3;
+	bool is_pos_required_pin = 4;
+}
+
+// Available Price List
+message AvailablePriceList {
+	int32 id = 1;
+	string key = 2;
+	string name = 3;
+	bool is_pos_required_pin = 4;
+}
+
+//	List warehouses for POS
+message ListAvailableWarehousesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 pos_id = 8;
+}
+
+//	List document types for POS
+message ListAvailableDocumentTypesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 pos_id = 8;
+}
+
+//	List Available Warehouses
+message ListAvailableWarehousesResponse {
+	int64 record_count = 1;
+	repeated AvailableWarehouse warehouses = 2;
+	string next_page_token = 3;
+}
+
+//	List payment type for POS
+message ListAvailablePaymentMethodsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 pos_id = 8;
+}
+
+//	List Available Tender Types
+message ListAvailablePaymentMethodsResponse {
+	int64 record_count = 1;
+	repeated AvailablePaymentMethod payment_methods = 2;
+	string next_page_token = 3;
+}
+
+//	List Available Document Types
+message ListAvailableDocumentTypesResponse {
+	int64 record_count = 1;
+	repeated AvailableDocumentType document_types = 2;
+	string next_page_token = 3;
+}
+
+//	List price list for POS
+message ListAvailablePriceListRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 pos_id = 8;
+}
+
+//	Price List Response
+message ListAvailablePriceListResponse {
+	int64 record_count = 1;
+	repeated AvailablePriceList price_list = 2;
+	string next_page_token = 3;
+}
+
+//	List warehouses for POS
+message ListAvailableCurrenciesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 pos_id = 8;
+}
+
+//	Currencies Response
+message ListAvailableCurrenciesResponse {
+	int64 record_count = 1;
+	repeated core_functionality.Currency currencies = 2;
+	string next_page_token = 3;
+}
+
+//	List POS Response
+message ListPointOfSalesResponse {
+	int64 record_count = 1;
+	repeated PointOfSales selling_points = 2;
+	string next_page_token = 3;
+}
+
+//	List Product Price Response
+message ListProductPriceResponse {
+	int64 record_count = 1;
+	repeated core_functionality.ProductPrice product_prices = 2;
+	string next_page_token = 3;
+}
+
+//	List Orders Response
+message ListOrdersResponse {
+	int64 record_count = 1;
+	repeated Order orders = 2;
+	string next_page_token = 3;
+}
+
+// List Orders Request
+message ListOrdersRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 pos_id = 8;
+	string document_no = 9;
+	string invoice_no = 10;
+	string document_status = 11;
+	int32 business_partner_id = 12;
+	string grand_total = 13;
+	string open_amount = 14;
+	bool is_waiting_for_pay = 15;
+	bool is_only_processed = 16;
+	bool is_only_aisle_seller = 17;
+	bool is_waiting_for_invoice = 18;
+	bool is_waiting_for_shipment = 19;
+	bool is_binding_offer = 20;
+	bool is_closed = 21;
+	bool is_nullified = 22;
+	bool is_only_rma = 23;
+	google.protobuf.Timestamp date_ordered_from = 24;
+	google.protobuf.Timestamp date_ordered_to = 25;
+	int32 sales_representative_id = 26;
+}
+
+//	List Order Lines Response
+message ListOrderLinesResponse {
+	int64 record_count = 1;
+	repeated OrderLine order_lines = 2;
+	string next_page_token = 3;
+}
+
+// List Orders Request
+message ListOrderLinesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 pos_id = 8;
+	int32 order_id = 9;
+}
+
+// List Product Price Request
+message ListProductPriceRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 pos_id = 8;
+	int32 business_partner_id = 9;
+	string valid_from = 10;
+	int32 price_list_id = 11;
+	int32 warehouse_id = 12;
+}
+
+// POS from user id
+message ListPointOfSalesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+}
+
+// Point of Sales request
+message PointOfSalesRequest {
+	int32 id = 1;
+}
+
+// Point of Sales definition
+message PointOfSales {
+	int32 id = 1;
+	string name = 2;
+	string description = 3;
+	string help = 4;
+	bool is_modify_price = 5;
+	bool is_pos_required_pin = 6;
+	bool is_aisle_seller = 7;
+	bool is_shared_pos = 8;
+	core_functionality.DocumentType document_type = 9;
+	core_functionality.BankAccount cash_bank_account = 10;
+	core_functionality.BankAccount cash_transfer_bank_account = 11;
+	core_functionality.SalesRepresentative sales_representative = 12;
+	Customer template_customer = 13;
+	core_functionality.PriceList price_list = 14;
+	core_functionality.Warehouse warehouse = 15;
+	core_functionality.Currency display_currency = 16;
+	int32 conversion_type_id = 17;
+	int32 key_layout_id = 18;
+	bool is_allows_modify_quantity = 19;
+	bool is_allows_return_order = 20;
+	bool is_allows_collect_order = 21;
+	bool is_allows_create_order = 22;
+	bool is_allows_confirm_shipment = 23;
+	bool is_display_tax_amount = 24;
+	bool is_display_discount = 25;
+	string maximum_refund_allowed = 26;
+	string maximum_daily_refund_allowed = 27;
+	core_functionality.Currency refund_reference_currency = 28;
+	core_functionality.DocumentType return_document_type = 29;
+	Campaign default_campaign = 30;
+	int32 default_opening_charge_id = 31;
+	int32 default_withdrawal_charge_id = 32;
+	string maximum_discount_allowed = 33;
+	string write_off_amount_tolerance = 34;
+	bool is_allows_allocate_seller = 35;
+	bool is_allows_concurrent_use = 36;
+	bool is_confirm_complete_shipment = 37;
+	bool is_allows_cash_closing = 38;
+	bool is_allows_cash_opening = 39;
+	bool is_allows_cash_withdrawal = 40;
+	bool is_allows_apply_discount = 41;
+	bool is_allows_create_customer = 42;
+	bool is_allows_print_document = 43;
+	bool is_allows_preview_document = 44;
+	bool is_pos_manager = 45;
+	bool is_allows_modify_discount = 46;
+	bool is_keep_price_from_customer = 47;
+	string maximum_line_discount_allowed = 48;
+	bool is_allows_modify_customer = 49;
+	bool is_allows_detail_cash_closing = 50;
+	string write_off_percentage_tolerance = 51;
+	bool is_write_off_by_percent = 52;
+	bool is_allows_write_off_amount = 53;
+	bool is_allows_customer_template = 54;
+}
+
+// Request for create a order
+message CreateOrderRequest {
+	int32 pos_id = 1;
+	int32 customer_id = 2;
+	int32 document_type_id = 3;
+	int32 price_list_id = 4;
+	int32 warehouse_id = 5;
+	int32 sales_representative_id = 6;
+	int32 campaign_id = 7;
+}
+
+// Request for release a order
+message ReleaseOrderRequest {
+	int32 pos_id = 1;
+	int32 sales_representative_id = 2;
+	int32 id = 3;
+}
+
+// Request for hold a order
+message HoldOrderRequest {
+	int32 pos_id = 1;
+	int32 sales_representative_id = 2;
+	int32 id = 3;
+}
+
+// Request for process a order
+message ProcessOrderRequest {
+	int32 pos_id = 1;
+	int32 id = 2;
+	bool create_payments = 3;
+	bool is_open_refund = 4;
+	repeated CreatePaymentRequest payments = 5;
+}
+
+//	Create Payment
+message CreatePaymentRequest {
+	int32 pos_id = 1;
+	int32 order_id = 2;
+	int32 invoice_id = 3;
+	int32 bank_id = 4;
+	string reference_no = 5;
+	string description = 6;
+	string amount = 7;
+	google.protobuf.Timestamp payment_date = 8;
+	string tender_type_code = 9;
+	int32 currency_id = 10;
+	int32 payment_method_id = 11;
+	google.protobuf.Timestamp payment_account_date = 12;
+	bool is_refund = 13;
+	int32 charge_id = 14;
+	int32 collecting_agent_id = 15;
+	int32 reference_bank_account_id = 16;
+	int32 customer_bank_account_id = 17;
+	int32 invoice_reference_id = 18;
+}
+
+//	Update Payment
+message UpdatePaymentRequest {
+	int32 id = 1;
+	int32 bank_id = 2;
+	string reference_no = 3;
+	string description = 4;
+	string amount = 5;
+	google.protobuf.Timestamp payment_date = 6;
+	string tender_type_code = 7;
+	int32 payment_method_id = 8;
+	google.protobuf.Timestamp payment_account_date = 9;
+	int32 pos_id = 10;
+	int32 reference_bank_account_id = 11;
+	int32 invoice_reference_id = 12;
+}
+
+// Request for delete a payment
+message DeletePaymentRequest {
+	int32 id = 1;
+	int32 pos_id = 2;
+}
+
+// List Payments Request
+message ListPaymentsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 pos_id = 8;
+	int32 order_id = 9;
+	bool is_only_refund = 10;
+	bool is_only_receipt = 11;
+}
+
+// Validate PIN Request
+message ValidatePINRequest {
+	int32 pos_id = 1;
+	string pin = 2;
+	string requested_access = 3;
+	string requested_amount = 4;
+	int32 order_id = 5;
+}
+
+//	List Payments Response
+message ListPaymentsResponse {
+	int64 record_count = 1;
+	repeated Payment payments = 2;
+	string next_page_token = 3;
+}
+
+//	Payment
+message Payment {
+	int32 id = 1;
+	string document_no = 2;
+	core_functionality.SalesRepresentative collecting_agent = 3;
+	DocumentStatus document_status = 4;
+	Customer customer = 5;
+	int32 pos_id = 6;
+	int32 order_id = 7;
+	int32 invoice_id = 8;
+	int32 bank_id = 9;
+	string reference_no = 10;
+	string description = 11;
+	string amount = 12;
+	google.protobuf.Timestamp payment_date = 13;
+	google.protobuf.Timestamp payment_account_date = 14;
+	string tender_type_code = 15;
+	core_functionality.Currency currency = 16;
+	bool is_refund = 17;
+	string name = 18;
+	string converted_amount = 19;
+	PaymentMethod payment_method = 20;
+	core_functionality.BankAccount bank_account = 21;
+	core_functionality.BankAccount reference_bank_account = 22;
+	core_functionality.Charge charge = 23;
+	core_functionality.DocumentType document_type = 24;
+	bool is_processed = 25;
+	string order_document_no = 26;
+	string invoice_document_no = 27;
+}
+
+// Request for delete a order
+message DeleteOrderRequest {
+	int32 id = 1;
+	int32 pos_id = 2;
+}
+
+// Request for delete a order
+message DeleteOrderLineRequest {
+	int32 order_id = 1;
+	int32 id = 2;
+	int32 pos_id = 3;
+}
+
+// Request for create a order line
+message CreateOrderLineRequest {
+	int32 order_id = 1;
+	int32 product_id = 2;
+	int32 charge_id = 3;
+	string description = 4;
+	string quantity = 5;
+	string price = 6;
+	string discount_rate = 7;
+	int32 warehouse_id = 8;
+	int32 pos_id = 9;
+	int32 resource_assignment_id = 10;
+}
+
+// Request for update a order
+message UpdateOrderRequest {
+	int32 id = 1;
+	int32 pos_id = 2;
+	int32 customer_id = 3;
+	int32 document_type_id = 4;
+	int32 price_list_id = 5;
+	int32 warehouse_id = 6;
+	string description = 7;
+	int32 campaign_id = 8;
+	string discount_rate = 9;
+	string discount_rate_off = 10;
+	string discount_amount_off = 11;
+	int32 sales_representative_id = 12;
+}
+
+// Request for update a order line
+message UpdateOrderLineRequest {
+	int32 order_id = 1;
+	int32 id = 2;
+	string description = 3;
+	string quantity = 4;
+	string price = 5;
+	int32 uom_id = 6;
+	string discount_rate = 7;
+	bool is_add_quantity = 8;
+	int32 warehouse_id = 9;
+	int32 pos_id = 10;
+}
+
+// Request for get a order
+message GetOrderRequest {
+	int32 id = 1;
+	int32 pos_id = 2;
+}
+
+// Request for get a key layout
+message GetKeyLayoutRequest {
+	int32 key_layout_id = 3;
+	int32 pos_id = 4;
+}
+
+// Sales Order
+message Order {
+	int32 id = 1;
+	string uuid = 2;
+	string document_no = 3;
+	core_functionality.DocumentType document_type = 4;
+	core_functionality.SalesRepresentative sales_representative = 5;
+	DocumentStatus document_status = 6;
+	core_functionality.PriceList price_list = 7;
+	core_functionality.Warehouse warehouse = 8;
+	string total_lines = 9;
+	string grand_total = 10;
+	string grand_total_converted = 11;
+	string tax_amount = 12;
+	string discount_amount = 13;
+	google.protobuf.Timestamp date_ordered = 14;
+	Customer customer = 15;
+	bool is_delivered = 16;
+	string order_reference = 17;
+	string description = 18;
+	string invoice_no = 19;
+	Campaign campaign = 20;
+	string display_currency_rate = 21;
+	string open_amount = 22;
+	string payment_amount = 23;
+	string refund_amount = 24;
+	string charge_amount = 25;
+	string credit_amount = 26;
+	int32 source_rma_id = 27;
+	bool is_rma = 28;
+	bool is_binding_offer = 29;
+	bool is_order = 30;
+}
+
+// Sales Order Line
+message OrderLine {
+	int32 id = 1;
+	string uuid = 2;
+	int32 order_id = 3;
+	core_functionality.Product product = 4;
+	core_functionality.Charge charge = 5;
+	string line_description = 6;
+	string description = 7;
+	core_functionality.Warehouse warehouse = 8;
+	string quantity = 9;
+	string quantity_ordered = 10;
+	string available_quantity = 11;
+	string price = 12;
+	string price_with_tax = 13;
+	string price_base = 14;
+	string price_base_with_tax = 15;
+	string price_list = 16;
+	string price_list_with_tax = 17;
+	string discount_rate = 18;
+	string discount_amount = 19;
+	string tax_amount = 20;
+	string base_tax_amount = 21;
+	string list_tax_amount = 22;
+	core_functionality.TaxRate tax_rate = 23;
+	//	Totals
+	string total_discount_amount = 24;
+	string total_tax_amount = 25;
+	string total_base_amount = 26;
+	string total_base_amount_with_tax = 27;
+	string total_amount = 28;
+	string total_amount_converted = 29;
+	string total_amount_with_tax = 30;
+	string total_amount_with_tax_converted = 31;
+	int32 line = 32;
+	core_functionality.ProductConversion uom = 33;
+	core_functionality.ProductConversion product_uom = 34;
+	time_control.ResourceAssignment resource_assignment = 35;
+	int32 source_rma_line_id = 36;
+}
+
+// Request Product Price
+message GetProductPriceRequest {
+	int32 pos_id = 1;
+	string search_value = 2;
+	string upc = 3;
+	string sku = 4;
+	string value = 6;
+	string name = 7;
+	int32 business_partner_id = 8;
+	string valid_from = 9;
+	int32 price_list_id = 10;
+	int32 warehouse_id = 11;
+}
+
+// Layout for POS
+message KeyLayout {
+	int32 id = 1;
+	string name = 2;
+	string description = 3;
+	string help = 4;
+	string layout_type = 5;
+	int32 columns = 6;
+	string color = 7;
+	repeated Key keys = 8;
+}
+
+// Key for layout
+message Key {
+	int32 id = 1;
+	string name = 2;
+	string description = 3;
+	int32 sub_key_layout_id = 4;
+	string color = 5;
+	int32 sequence = 6;
+	int32 span_x = 7;
+	int32 span_y = 8;
+	string product_value = 9;
+	string quantity = 10;
+	file_management.ResourceReference resource_reference = 11;
+}
+
+//	Stock
+message Stock {
+	int32 product_id = 1;
+	double quantity = 2;
+	bool is_in_stock = 3;
+	bool is_decimal_quantity = 4;
+	bool is_show_default_notification_message = 5;
+	bool is_use_config_minimum_quantity = 6;
+	double minimum_quantity = 7;
+	bool is_use_config_minimum_sale_quantity = 8;
+	double minimum_sale_quantity = 9;
+	bool is_use_config_maximum_sale_quantity = 10;
+	double maximum_sale_quantity = 11;
+	bool is_use_config_backorders = 12;
+	double backorders = 13;
+	bool is_use_config_notify_stock_quantity = 14;
+	double notify_stock_quantity = 15;
+	bool is_use_config_quantity_increments = 16;
+	double quantity_increments = 17;
+	bool is_use_config_enable_quantity_increments = 18;
+	bool is_enable_quantity_increments = 19;
+	bool is_use_config_manage_stock = 20;
+	bool is_manage_stock = 21;
+	google.protobuf.Timestamp low_stock_date = 22;
+	bool is_decimal_divided = 23;
+	double stock_status_changed_auto = 24;
+	int32 warehouse_id = 25;
+	string warehouse_name = 26;
+	string attribute_name = 27;
+}
+
+message ListStocksRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 pos_id = 8;
+	string sku = 9;
+	string value = 10;
+}
+
+//	List of Stock
+message ListStocksResponse {
+	int64 record_count = 1;
+	repeated Stock stocks = 2;
+	string next_page_token = 3;
+}
+
+//	List Cash Register for POS
+message ListAvailableCashRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 pos_id = 8;
+}
+
+//	List Available Warehouses
+message ListAvailableCashResponse {
+	int64 record_count = 1;
+	repeated AvailableCash cash = 2;
+	string next_page_token = 3;
+}
+
+// Available Warehouse
+message AvailableCash {
+	int32 id = 1;
+	string key = 2;
+	string name = 3;
+	bool is_pos_required_pin = 4;
+	core_functionality.BankAccount bank_account = 5;
+}
+
+// Mnemonic Commands
+message CommandShortcut {
+	int32 id = 1;
+	int32 pos_id = 2;
+	string command = 3;
+	string shortcut = 4;
+}
+
+message SaveCommandShortcutRequest {
+	int32 pos_id = 1;
+	string command = 2;
+	string shortcut = 3;
+}
+
+message DeleteCommandShortcutRequest {
+	int32 pos_id = 1;
+	int32 id = 2;
+}
+
+message ListCommandShortcutsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 pos_id = 8;
+}
+
+message ListCommandShortcutsResponse {
+	int64 record_count = 1;
+	repeated CommandShortcut records = 2;
+	string next_page_token = 3;
+}
+
+
+// Campaign
+message Campaign {
+	int32 id = 1;
+	string name = 2;
+	string description = 3;
+	google.protobuf.Timestamp start_date = 4;
+	google.protobuf.Timestamp end_date = 5;
+}
+
+message ListCampaignsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 pos_id = 8;
+}
+
+message ListCampaignsResponse {
+	int64 record_count = 1;
+	repeated Campaign records = 2;
+	string next_page_token = 3;
+}
+
+//	Copy Order
+// Request for Copy a Order from Source Order
+message CopyOrderRequest {
+	int32 source_order_id = 1;
+	int32 sales_representative_id = 2;
+	int32 pos_id = 3;
+}
+
+//	Return Order
+
+// Request for get a Return from Order
+message GetOpenRMARequest {
+	int32 source_order_id = 1;
+	int32 pos_id = 2;
+}
+
+// Request for create a Return from Order
+message CreateRMARequest {
+	int32 source_order_id = 1;
+	int32 sales_representative_id = 2;
+	int32 pos_id = 3;
+	bool is_create_lines_from_order = 4;
+}
+
+// Request for delete a Return
+message DeleteRMARequest {
+	int32 id = 1;
+	int32 pos_id = 2;
+}
+
+// Request for delete a Return Line
+message DeleteRMALineRequest {
+	int32 id = 1;
+	int32 pos_id = 2;
+	int32 rma_id = 3;
+}
+
+// Request for delete a Return Line
+message UpdateRMALineRequest {
+	int32 id = 1;
+	string description = 2;
+	string quantity = 3;
+	int32 pos_id = 4;
+	int32 rma_id = 5;
+}
+
+// Request for Create a Return Line
+message CreateRMALineRequest {
+	int32 rma_id = 1;
+	int32 source_order_line_id = 2;
+	string description = 3;
+	string quantity = 4;
+	int32 pos_id = 5;
+}
+
+//	List Return Lines Request
+message ListRMALinesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 pos_id = 8;
+	int32 rma_id = 9;
+}
+
+//	List RMA Lines
+message ListRMALinesResponse {
+	int64 record_count = 1;
+	repeated RMALine rma_lines = 2;
+	string next_page_token = 3;
+}
+
+// Request for Process a Return
+message ProcessRMARequest {
+	int32 rma_id = 1;
+	string description = 2;
+	string document_action = 3;
+	int32 pos_id = 4;
+}
+
+// Request for Create a new Sales Order from a RMA
+message CreateOrderFromRMARequest {
+	int32 source_rma_id = 1;
+	int32 sales_representative_id = 2;
+	int32 pos_id = 3;
+}
+
+// Return Order
+message RMA {
+	int32 id = 1;
+	string document_no = 2;
+	core_functionality.DocumentType document_type = 3;
+	core_functionality.SalesRepresentative sales_representative = 4;
+	DocumentStatus document_status = 5;
+	core_functionality.PriceList price_list = 6;
+	core_functionality.Warehouse warehouse = 7;
+	string total_lines = 8;
+	string grand_total = 9;
+	string tax_amount = 10;
+	string discount_amount = 11;
+	google.protobuf.Timestamp date_ordered = 12;
+	Customer customer = 13;
+	bool is_delivered = 14;
+	string order_reference = 15;
+	string description = 16;
+	Campaign campaign = 17;
+	string display_currency_rate = 18;
+	string open_amount = 19;
+	string payment_amount = 20;
+	string refund_amount = 21;
+	string charge_amount = 22;
+	string credit_amount = 23;
+	int32 source_order_id = 24;
+}
+
+// Return Order Line
+message RMALine {
+	int32 id = 1;
+	core_functionality.Product product = 2;
+	core_functionality.Charge charge = 3;
+	string line_description = 4;
+	string description = 5;
+	core_functionality.Warehouse warehouse = 6;
+	string quantity = 7;
+	string quantity_ordered = 8;
+	string available_quantity = 9;
+	string price = 10;
+	string price_with_tax = 11;
+	string price_base = 12;
+	string price_base_with_tax = 13;
+	string price_list = 14;
+	string price_list_with_tax = 15;
+	string discount_rate = 16;
+	string discount_amount = 17;
+	string tax_amount = 18;
+	string base_tax_amount = 19;
+	string list_tax_amount = 20;
+	core_functionality.TaxRate tax_rate = 21;
+	//	Totals
+	string total_discount_amount = 22;
+	string total_tax_amount = 23;
+	string total_base_amount = 24;
+	string total_base_amount_with_tax = 25;
+	string total_amount = 26;
+	string total_amount_with_tax = 27;
+	int32 line = 28;
+	core_functionality.ProductConversion uom = 29;
+	core_functionality.ProductConversion product_uom = 30;
+	int32 source_order_line_id = 31;
+}
+
+// Customer Credit Memo
+message CreditMemo {
+	int32 id = 1;
+	string document_no = 2;
+	string description = 3;
+	google.protobuf.Timestamp document_date = 4;
+	string amount = 5;
+	string open_amount = 6;
+	core_functionality.Currency currency = 7;
+}
+
+message ListCustomerCreditsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 pos_id = 8;
+	int32 customer_id = 9;
+	int32 document_type_id = 10;
+}
+
+message ListCustomerCreditsResponse {
+	int64 record_count = 1;
+	repeated CreditMemo records = 2;
+	string next_page_token = 3;
+}

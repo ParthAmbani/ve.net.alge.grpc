@@ -1,0 +1,459 @@
+/************************************************************************************
+ * Copyright (C) 2018-present E.R.P. Consultores y Asociados, C.A.                  *
+ * Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com                     *
+ * This program is free software: you can redistribute it and/or modify             *
+ * it under the terms of the GNU General Public License as published by             *
+ * the Free Software Foundation, either version 2 of the License, or                *
+ * (at your option) any later version.                                              *
+ * This program is distributed in the hope that it will be useful,                  *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                   *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                     *
+ * GNU General Public License for more details.                                     *
+ * You should have received a copy of the GNU General Public License                *
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.            *
+ ************************************************************************************/
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.spin.backend.grpc.form.out_bound_order";
+option java_outer_classname = "ADempiereOutBoundOrder";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+import "base_data_type.proto";
+
+// Base URL
+// /forms/out_bound_order
+
+package form.out_bound_order;
+
+// The Generate Outbound (Sales Order / Distribution Order) form service definition.
+// - org.spin.wms.form.OutBoundOrder
+// - org.spin.wms.form.VOutBoundOrder
+service OutBoundOrderService {
+	// Filters
+	rpc ListOrganizations(ListOrganizationsRequest) returns (data.ListLookupItemsResponse) {
+		option (google.api.http) = {
+			get: "/forms/out-bound-orders/organizations"
+		};
+	}
+	rpc ListWarehouses(ListWarehousesRequest) returns (data.ListLookupItemsResponse) {
+		option (google.api.http) = {
+			get: "/forms/out-bound-orders/{organization_id}/warehouses"
+		};
+	}
+	rpc ListDocumentTypes(ListDocumentTypesRequest) returns (data.ListLookupItemsResponse) {
+		option (google.api.http) = {
+			get: "/forms/out-bound-orders/document-types/{movement_type}"
+		};
+	}
+	rpc ListSalesRegions(ListSalesRegionsRequest) returns (data.ListLookupItemsResponse) {
+		option (google.api.http) = {
+			get: "/forms/out-bound-orders/sales-regions"
+		};
+	}
+	rpc ListSalesRepresentatives(ListSalesRepresentativesRequest) returns (data.ListLookupItemsResponse) {
+		option (google.api.http) = {
+			get: "/forms/out-bound-orders/sales-representatives"
+		};
+	}
+
+	// Results
+	rpc ListDocumentHeaders(ListDocumentHeadersRequest) returns (ListDocumentHeadersResponse) {
+		option (google.api.http) = {
+			get: "/forms/out-bound-orders/documents/{movement_type}"
+		};
+	}
+	rpc ListDocumentLines(ListDocumentLinesRequest) returns (ListDocumentLinesResponse) {
+		option (google.api.http) = {
+			get: "/forms/out-bound-orders/documents/{movement_type}/lines"
+		};
+	}
+
+	// Process
+	rpc ListLocators(ListLocatorsRequest) returns (data.ListLookupItemsResponse) {
+		option (google.api.http) = {
+			get: "/forms/out-bound-orders/warehouses/{warehouse_id}/locators"
+		};
+	}
+	rpc ListTargetDocumentTypes(ListTargetDocumentTypesRequest) returns (data.ListLookupItemsResponse) {
+		option (google.api.http) = {
+			get: "/forms/out-bound-orders/target-document-types"
+		};
+	}
+	rpc ListDocumentActions(ListDocumentActionsRequest) returns (data.ListLookupItemsResponse) {
+		option (google.api.http) = {
+			get: "/forms/out-bound-orders/document-actions"
+		};
+	}
+	rpc ListDeliveryRules(ListDeliveryRulesRequest) returns (data.ListLookupItemsResponse) {
+		option (google.api.http) = {
+			get: "/forms/out-bound-orders/delivery-rules"
+		};
+	}
+	rpc ListDeliveryVias(ListDeliveryViasRequest) returns (data.ListLookupItemsResponse) {
+		option (google.api.http) = {
+			get: "/forms/out-bound-orders/delivery-vias"
+		};
+	}
+	rpc ListShippers(ListShippersRequest) returns (data.ListLookupItemsResponse) {
+		option (google.api.http) = {
+			get: "/forms/out-bound-orders/shippers"
+		};
+	}
+	rpc ListFreightDocumentTypes(ListFreightDocumentTypesRequest) returns (data.ListLookupItemsResponse) {
+		option (google.api.http) = {
+			get: "/forms/out-bound-orders/freight-document-types"
+		};
+	}
+	rpc ListVehicles(ListVehiclesRequest) returns (data.ListLookupItemsResponse) {
+		option (google.api.http) = {
+			get: "/forms/out-bound-orders/shippers/{shipper_id}/vehicles"
+		};
+	}
+	rpc ListDrivers(ListDriversRequest) returns (data.ListLookupItemsResponse) {
+		option (google.api.http) = {
+			get: "/forms/out-bound-orders/drivers"
+		};
+	}
+	rpc GenerateLoadOrder(GenerateLoadOrderRequest) returns (GenerateLoadOrderResponse) {
+		option (google.api.http) = {
+			post: "/forms/out-bound-orders/load-order/{movement_type}",
+			body: "*"
+		};
+	}
+}
+
+
+// Organization
+message ListOrganizationsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+}
+
+// Warehouse
+message ListWarehousesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+	// custom filters
+	int32 organization_id = 10;
+}
+
+// Document Type
+message ListDocumentTypesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+	// custom filters
+	string movement_type = 10;
+}
+
+// Sales Region
+message ListSalesRegionsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+}
+
+// Sales Representative
+message ListSalesRepresentativesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+}
+
+
+
+// Document Header
+message ListDocumentHeadersRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+	//
+	string movement_type = 10;
+	int32 organization_id = 11;
+	int32 warehouse_id = 12;
+	int32 sales_region_id = 13;
+	int32 sales_representative_id = 14;
+	int32 document_type_id = 15;
+}
+message DocumentHeader {
+	int32 id = 1;
+	string uuid = 2;
+	string document_no = 3;
+	google.protobuf.Timestamp date_ordered = 4;
+	google.protobuf.Timestamp date_promised = 5;
+	string region = 6;
+	string city = 7;
+	int32 sales_representative_id = 8;
+	string sales_representative = 9;
+	int32 business_partner_id = 10;
+	string business_partner_value = 11;
+	string business_partner = 12;
+	int32 location_id = 13;
+	string location = 14;
+	string address1 = 15;
+	string address2 = 16;
+	string address3 = 17;
+	string address4 = 18;
+	string weight = 19;
+	string volume = 20;
+	int32 warehouse_id = 21;
+	string warehouse = 22;
+}
+message ListDocumentHeadersResponse {
+	int64 record_count = 1;
+	repeated DocumentHeader records = 2;
+	string next_page_token = 3;
+}
+
+// Document Line
+message ListDocumentLinesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+	//
+	string movement_type = 10;
+	repeated int32 header_ids = 11;
+}
+message DocumentLine {
+	int32 id = 1;
+	string uuid = 2;
+	string document_no = 3;
+	int32 warehouse_id = 4;
+	string warehouse = 5;
+	int32 product_id = 6;
+	string product_value = 7;
+	string product = 8;
+	int32 uom_id = 9;
+	string uom = 10;
+	int32 order_uom_id = 11;
+	string order_uom = 12;
+	string on_hand_quantity = 13;
+	string quantity = 14;
+	string weight = 15;
+	string volume = 16;
+	string ordered_quantity = 17;
+	string reserved_quantity = 18;
+	string quantity_invoiced = 19;
+	string delivered_quantity = 20;
+	string quantity_in_transit = 21;
+	string delivery_rule_value = 22;
+	string delivery_rule = 23;
+	bool is_stocked = 24;
+	int32 header_id = 25;
+}
+message ListDocumentLinesResponse {
+	int64 record_count = 1;
+	repeated DocumentLine records = 2;
+	string next_page_token = 3;
+}
+
+
+
+// Locator
+message ListLocatorsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+	// custom filters
+	int32 warehouse_id = 10;
+}
+
+// Target Document Type
+message ListTargetDocumentTypesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+	// custom filters
+	string movement_type = 10;
+}
+
+// Document Action
+message ListDocumentActionsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+}
+
+// Delivery Rule
+message ListDeliveryRulesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+}
+
+// Delivery Via
+message ListDeliveryViasRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+}
+
+// Shipper
+message ListShippersRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+}
+
+// Freight Document Type
+message ListFreightDocumentTypesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+}
+
+// Vehicle
+message ListVehiclesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+	// custom filters
+	int32 shipper_id = 10;
+}
+
+// Driver
+message ListDriversRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+}
+
+message OrderLineRequest {
+	int32 id = 1;
+	int32 header_id = 2;
+	int32 product_id = 3;
+	string quantity = 4;
+	// string quantity_ordered = 5;
+	// string quantity_in_transit = 6;
+	// string quantity_delivered = 7;
+	// int32 uom_id = 8;
+	string weight = 9;
+	string volume = 10;
+	string delivery_rule = 11;
+}
+message GenerateLoadOrderRequest {
+	string movement_type = 1;
+	int32 organization_id = 2;
+	int32 warehouse_id = 3;
+	int32 locator_id = 4;
+	google.protobuf.Timestamp document_date = 5;
+	google.protobuf.Timestamp shipment_date = 6;
+	int32 target_document_type_id = 7;
+	string document_action = 8;
+	repeated OrderLineRequest lines = 9;
+	string delivery_rule = 10;
+	string delivery_via = 11;
+	int32 shipper_id = 12;
+	bool is_generate_freight_order = 13;
+	int32 vehicle_id = 14;
+	int32 driver_id = 15;
+	int32 freight_document_type_id = 16;
+}
+message GenerateLoadOrderResponse {
+	int32 record_count = 1;
+	string message = 2;
+	string document_no = 3;
+	string freight_message = 4;
+	string freight_document_no = 5;
+}

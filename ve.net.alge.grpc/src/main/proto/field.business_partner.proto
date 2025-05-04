@@ -1,0 +1,227 @@
+/************************************************************************************
+ * Copyright (C) 2018-present E.R.P. Consultores y Asociados, C.A.                  *
+ * Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com                     *
+ * This program is free software: you can redistribute it and/or modify             *
+ * it under the terms of the GNU General Public License as published by             *
+ * the Free Software Foundation, either version 2 of the License, or                *
+ * (at your option) any later version.                                              *
+ * This program is distributed in the hope that it will be useful,                  *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                   *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                     *
+ * GNU General Public License for more details.                                     *
+ * You should have received a copy of the GNU General Public License                *
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.            *
+ ************************************************************************************/
+syntax = "proto3";
+
+
+option java_multiple_files = true;
+option java_package = "org.spin.backend.grpc.field.business_partner";
+option java_outer_classname = "ADempiereBusinessPartner";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+import "base_data_type.proto";
+
+// Base URL
+// /fields/business-partners/
+
+package field.business_partner;
+
+// The business partner service definition.
+service BusinessPartnerInfoService {
+	// Filters
+	rpc ListBusinessPartnerGroups(ListBusinessPartnerGroupsRequest) returns (data.ListLookupItemsResponse) {
+		option (google.api.http) = {
+			get: "/fields/business-partners/groups"
+		};
+	}
+
+	// Result
+	rpc ListBusinessPartnersInfo(ListBusinessPartnersInfoRequest) returns (ListBusinessPartnersInfoResponse) {
+		option (google.api.http) = {
+			get: "/fields/business-partners"
+			additional_bindings: {
+				get: "/fields/business-partners/table/{table_name}/{column_name}"
+			}
+			additional_bindings: {
+				get: "/fields/business-partners/column/{column_id}"
+			}
+			additional_bindings: {
+				get: "/fields/business-partners/field/{field_id}"
+			}
+			additional_bindings: {
+				get: "/fields/business-partners/parameter/{process_parameter_id}"
+			}
+			additional_bindings: {
+				get: "/fields/business-partners/query-criteria/{browse_field_id}"
+			}
+			additional_bindings: {
+				get: "/fields/business-partners/display-definition/{display_definition_field_id}"
+			}
+		};
+	}
+	rpc ListBusinessPartnerContacts(ListBusinessPartnerContactsRequest) returns (ListBusinessPartnerContactsResponse) {
+		option (google.api.http) = {
+			get: "/fields/business-partners/{business_partner_id}/contacts"
+		};
+	}
+	rpc ListBusinessPartnerAddressLocations(ListBusinessPartnerAddressLocationsRequest) returns (ListBusinessPartnerAddressLocationsResponse) {
+		option (google.api.http) = {
+			get: "/fields/business-partners/{business_partner_id}/address-locations"
+		};
+	}
+}
+
+
+// Business Partner Group
+message ListBusinessPartnerGroupsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+}
+
+
+// List Business Partner Info
+message BusinessPartnerInfo {
+	int32 id = 1;
+	string uuid = 2;
+	string display_value = 3;
+	string value = 4;
+	string tax_id = 5;
+	string name = 6;
+	string name2 = 7;
+	string description = 8;
+	string business_partner_group = 9;
+	string open_balance_amount = 10;
+	string credit_available_amount = 11;
+	string credit_used_amount = 12;
+	string revenue_amount = 13;
+	bool is_active = 14;
+	bool is_customer = 15;
+	bool is_vendor = 16;
+}
+
+message ListBusinessPartnersInfoResponse {
+	int64 record_count = 1;
+	repeated BusinessPartnerInfo records = 2;
+	string next_page_token = 3;
+}
+
+message ListBusinessPartnersInfoRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+	bool is_without_validation = 10;
+	// references
+	int32 reference_id = 11;
+	string table_name = 12;
+	string column_name = 13;
+	int32 column_id = 14;
+	int32 field_id = 15;
+	int32 process_parameter_id = 16;
+	int32 browse_field_id = 17;
+	int32 display_definition_field_id = 18;
+	// custom filters
+	string value = 19;
+	string contact = 20;
+	string phone = 21;
+	string name = 22;
+	string email = 23;
+	string postal_code = 24;
+	string is_vendor = 25;
+	string is_customer = 26;
+	int32 business_partner_group_id = 27;
+}
+
+
+
+// Contact
+message BusinessPartnerContact {
+	int32 id = 1;
+	string uuid = 2;
+	string greeting = 3;
+	string name = 4;
+	string title = 5;
+	string address = 6;
+	string phone = 7;
+	string phone_2 = 8;
+	string fax = 9;
+	string email = 10;
+	google.protobuf.Timestamp last_contact = 11;
+	string last_result = 12;
+	bool is_active = 13;
+}
+
+message ListBusinessPartnerContactsResponse {
+	int64 record_count = 1;
+	repeated BusinessPartnerContact records = 2;
+	string next_page_token = 3;
+}
+
+message ListBusinessPartnerContactsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	// custom filters
+	int32 business_partner_id = 9;
+}
+
+
+
+// Address Location
+message BusinessPartnerAddressLocation {
+	int32 id = 1;
+	string uuid = 2;
+	string name = 3;
+	string description = 4;
+	string phone = 5;
+	string phone2 = 6;
+	string fax = 7;
+	string address = 8;
+	string map_url = 9;
+	bool is_ship_to_address = 10; // Ship Adrress
+	bool is_bill_to_address = 11; // Invoice Address
+	bool is_remit_to_address = 12; // Pay-From Address
+	bool is_pay_form_address = 13; // Remit-To Address
+	bool is_active = 14;
+	bool is_default_shipping = 15;
+	bool is_default_billing = 16;
+}
+
+message ListBusinessPartnerAddressLocationsResponse {
+	int64 record_count = 1;
+	repeated BusinessPartnerAddressLocation records = 2;
+	string next_page_token = 3;
+}
+
+message ListBusinessPartnerAddressLocationsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	// custom filters
+	int32 business_partner_id = 9;
+}

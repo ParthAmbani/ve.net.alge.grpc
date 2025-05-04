@@ -1,0 +1,277 @@
+/************************************************************************************
+ * Copyright (C) 2018-present E.R.P. Consultores y Asociados, C.A.                  *
+ * Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com                     *
+ * This program is free software: you can redistribute it and/or modify             *
+ * it under the terms of the GNU General Public License as published by             *
+ * the Free Software Foundation, either version 2 of the License, or                *
+ * (at your option) any later version.                                              *
+ * This program is distributed in the hope that it will be useful,                  *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                   *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                     *
+ * GNU General Public License for more details.                                     *
+ * You should have received a copy of the GNU General Public License                *
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.            *
+ ************************************************************************************/
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.spin.backend.grpc.material_management";
+option java_outer_classname = "ADempiereMaterialManagement";
+
+import "google/api/annotations.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+import "base_data_type.proto";
+
+// Base URL
+// /material-management/
+
+package material_management;
+
+// The Material Management service definition.
+service MaterialManagement {
+	// List Product Storage
+	rpc ListProductStorage(ListProductStorageRequest) returns (data.ListEntitiesResponse) {
+		option (google.api.http) = { get: "/material-management/products-storage" };
+	}
+
+	// Attribute Set
+	rpc ListProductAttributeValues(ListProductAttributeValuesRequest) returns (data.ListEntitiesResponse) {
+		option (google.api.http) = { get: "/material-management/attribute-values" };
+	}
+	rpc ListProductAttributes(ListProductAttributesRequest) returns (data.ListEntitiesResponse) {
+		option (google.api.http) = { get: "/material-management/attribute-values" };
+	}
+	rpc GetProductAttributeSet(GetProductAttributeSetRequest) returns (ProductAttributeSet) {
+		option (google.api.http) = { get: "/material-management/products/{id}/attribute-values" };
+	}
+	rpc GetProductAttributeSetInstance(GetProductAttributeSetInstanceRequest) returns (ProductAttributeSetInstance) {
+		option (google.api.http) = { get: "/material-management/products/{product_id}/instances/{id}" };
+	}
+	rpc ListProductAttributeSetInstances(ListProductAttributeSetInstancesRequest) returns (ListProductAttributeSetInstancesResponse) {
+		option (google.api.http) = { get: "/material-management/products/{product_id}/instances" };
+	}
+	rpc SaveProductAttributeSetInstance(SaveProductAttributeSetInstanceRequest) returns (ProductAttributeSetInstance) {
+		option (google.api.http) = { 
+			post: "/material-management/products/{product_id}/instances",
+			body: "*"
+		};
+	}
+
+	// Locator
+	rpc ListAvailableWarehouses(ListAvailableWarehousesRequest) returns (ListAvailableWarehousesResponse) {
+		option (google.api.http) = { get: "/material-management/warehouses" };
+	}
+	rpc ListLocators(ListLocatorsRequest) returns (ListLocatorsResponse) {
+		option (google.api.http) = { get: "/material-management/locators" };
+	}
+}
+
+// Get Accounting Combination Request
+message ListProductStorageRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string table_name = 8;
+	int32 record_id = 9;
+}
+
+message ProductAttributeValue {
+	int32 id = 1;
+	string value = 2;
+	string name = 3;
+	string description = 4;
+}
+
+message ProductAttribute {
+	int32 id = 1;
+	string name = 2;
+	string description = 3;
+	string value_type = 4;
+	bool is_mandatory = 5;
+	bool is_instance_attribute = 6;
+	int32 sequence = 7;
+	repeated ProductAttributeValue product_attribute_values = 8;
+}
+
+message ProductAttributeSet {
+	int32 id = 1;
+	string name = 2;
+	string description = 3;
+	bool is_instance_attribute = 4;
+	// Lot Attributes
+	bool is_lot = 5;
+	bool is_lot_mandatory = 6;
+	int32 lot_control_id = 7;
+	string lot_char_start_overwrite = 8;
+	string lot_char_end_overwrite = 9;
+	// Serial Attributes
+	bool is_serial = 10;
+	bool is_serial_mandatory = 11;
+	int32 serial_control_id = 12;
+	string serial_char_start_overwrite = 13;
+	string serial_char_end_overwrite = 14;
+	// Guarantee Date Attributes
+	bool is_guarantee_date = 15;
+	bool is_guarantee_date_mandatory = 16;
+	int32 guarantee_days = 17;
+	string mandatory_type = 18;
+	repeated ProductAttribute product_attributes = 19;
+}
+
+// Based on M_AttributeInstance table
+message ProductAttributeInstance {
+	int32 id = 1;
+	string value = 2;
+	string value_number = 3;
+	int32 product_attribute_set_instance_id = 4;
+	int32 product_attribute_id = 5;
+	int32 product_attribute_value_id = 6;
+}
+
+message ProductAttributeSetInstance {
+	int32 id = 1;
+	string description = 2;
+	google.protobuf.Timestamp guarantee_date = 3;
+	string lot = 4;
+	int32 lot_id = 5;
+	string serial = 6;
+	ProductAttributeSet product_attribute_set = 7;
+	repeated ProductAttributeInstance product_attribute_instances = 8;
+}
+
+message GetProductAttributeSetRequest {
+	int32 id = 1;
+	int32 product_id = 2;
+	int32 product_attribute_set_instance_id = 3;
+}
+
+message ListProductAttributesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 product_id = 8;
+	int32 product_attribute_set_instance_id = 9;
+}
+
+message ListProductAttributeValuesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 product_attribute_id = 8;
+}
+
+message GetProductAttributeSetInstanceRequest {
+	int32 id = 1;
+	int32 product_id = 2;
+}
+
+message ListProductAttributeSetInstancesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 product_id = 8;
+	int32 product_attribute_set_id = 9;
+}
+
+// List List Product Attribute Set Instances Response
+message ListProductAttributeSetInstancesResponse {
+	int64 record_count = 1;
+	repeated ProductAttributeSetInstance records = 2;
+	string next_page_token = 3;
+}
+
+// Save Product Attribute Set Instance Request
+message SaveProductAttributeSetInstanceRequest {
+	int32 id = 1;
+	google.protobuf.Timestamp guarantee_date = 2;
+	string lot = 3;
+	string serial = 4;
+	int32 product_id = 5;
+	int32 product_attribute_set_id = 6;
+	// Product Attribute UUID, Value
+	google.protobuf.Struct attributes = 7;
+}
+
+// Warehouse
+message Warehouse {
+	int32 id = 1;
+	string value = 2;
+	string name = 3;
+	string description = 4;
+	bool is_in_transit = 5;
+	Warehouse warehouse_source = 6;
+}
+
+message ListAvailableWarehousesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 warehouse_id = 8;
+}
+
+message ListAvailableWarehousesResponse {
+	int64 record_count = 1;
+	repeated Warehouse records = 2;
+	string next_page_token = 3;
+}
+
+// Locator
+message Locator {
+	int32 id = 1;
+	string uuid = 2;
+	string value = 3;
+	string display_value = 4;
+	bool is_default = 5;
+	string aisle = 6; // (X)
+	string bin = 7; // (Y)
+	string level = 8; // (Z)
+	Warehouse warehouse = 9;
+}
+
+message ListLocatorsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	google.protobuf.Struct context_attributes = 8;
+	int32 warehouse_id = 9;
+	// references
+	int32 process_parameter_id = 10;
+	int32 field_id = 11;
+	int32 browse_field_id = 12;
+	int32 reference_id = 13;
+	int32 column_id = 14;
+	string table_name = 15;
+	string column_name = 16;
+}
+
+message ListLocatorsResponse {
+	int64 record_count = 1;
+	repeated Locator records = 2;
+	string next_page_token = 3;
+}

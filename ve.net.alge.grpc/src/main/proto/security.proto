@@ -1,0 +1,380 @@
+/*************************************************************************************
+ * Copyright (C) 2012-2023 E.R.P. Consultores y Asociados, C.A.                      *
+ * Contributor(s): Yamel Senih ysenih@erpya.com                                      *
+ * This program is free software: you can redistribute it and/or modify              *
+ * it under the terms of the GNU General Public License as published by              *
+ * the Free Software Foundation, either version 2 of the License, or                 *
+ * (at your option) any later version.                                               *
+ * This program is distributed in the hope that it will be useful,                   *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                    *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                      *
+ * GNU General Public License for more details.                                      *
+ * You should have received a copy of the GNU General Public License                 *
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.             *
+ ************************************************************************************/
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.spin.backend.grpc.security";
+option java_outer_classname = "ADempiereSecurity";
+
+import "google/api/annotations.proto";
+import "google/protobuf/struct.proto";
+
+// Base URL
+// /security/
+
+package security;
+
+// The greeting service definition.
+service Security {
+	// Request login from user
+	rpc RunLogin(LoginRequest) returns (Session) {
+		option (google.api.http) = {
+			post: "/security/login",
+			body: "*"
+		};
+	}
+	// Request a Role
+	rpc RunLogout(LogoutRequest) returns (Session) {
+		option (google.api.http) = { post: "/security/logout" };
+	}
+	// Request user roles from SessionInfo
+	rpc GetUserInfo(UserInfoRequest) returns (UserInfo) {
+		option (google.api.http) = { get: "/security/user-info" };
+	}
+	// Request Menu from Parent
+	rpc GetMenu(MenuRequest) returns (MenuResponse) {
+		option (google.api.http) = {
+			get: "/security/menus"
+		};
+	}
+	// Request change role
+	rpc RunChangeRole(ChangeRoleRequest) returns (Session) {
+		option (google.api.http) = {
+			put: "/security/change-role",
+			body: "*"
+		};
+	}
+	// Request session
+	rpc GetSessionInfo(SessionInfoRequest) returns (SessionInfo) {
+		option (google.api.http) = { get: "/security/session-info" };
+	}
+	rpc SetSessionAttribute(SetSessionAttributeRequest) returns (Session) {
+		option (google.api.http) = {
+			put: "/security/session-attribute",
+			body: "*"
+		};
+	}
+
+	// List Roles
+	rpc ListRoles(ListRolesRequest) returns (ListRolesResponse) {
+		option (google.api.http) = { get: "/security/roles" };
+	}
+	//	List Organizations
+	rpc ListOrganizations(ListOrganizationsRequest) returns (ListOrganizationsResponse) {
+		option (google.api.http) = { get: "/security/organizations" };
+	}
+	//	Warehouses
+	rpc ListWarehouses(ListWarehousesRequest) returns (ListWarehousesResponse) {
+		option (google.api.http) = { get: "/security/warehouses" };
+	}
+
+	// List Available Services
+	rpc ListServices(ListServicesRequest) returns (ListServicesResponse) {
+		option (google.api.http) = { get: "/security/services" };
+	}
+	// Request login from Open ID
+	rpc RunLoginOpenID(LoginOpenIDRequest) returns (Session) {
+		option (google.api.http) = {
+			post: "/security/login-open-id",
+			body: "*"
+		};
+	}
+
+	//	Validate dictionary access
+	rpc GetDictionaryAccess(GetDictionaryAccessRequest) returns (GetDictionaryAccessResponse) {
+		option (google.api.http) = {
+			get: "/security/dictionary/{dictionary_type}/{id}"
+		};
+	}
+}
+
+
+//	Token after session
+message Session {
+	string token = 1;
+}
+
+
+// Request a Login SessionInfo
+message LoginRequest {
+	string user_name = 1;
+	string user_pass = 2;
+	string token = 3;
+	int32 role_id = 4;
+	int32 organization_id = 5;
+	int32 warehouse_id = 6;
+	string language = 7;
+	string client_version = 8;
+}
+
+// Request a Logout
+message LogoutRequest {
+}
+
+// Request a SessionInfo
+message SessionInfoRequest {
+}
+
+
+// Request a Change Role
+message ChangeRoleRequest {
+	int32 role_id = 1;
+	int32 organization_id = 2;
+	int32 warehouse_id = 3;
+	string language = 4;
+}
+
+// Request User Info
+message UserInfoRequest {
+}
+
+// User information
+message UserInfo {
+	int32 id = 1;
+	string uuid = 2;
+	string value = 3;
+	string name = 4;
+	string description = 5;
+	string comments = 6;
+	string image = 7;
+	int64 connection_timeout = 8;
+	// client of user record
+	string client_uuid = 9;
+}
+
+
+// Session Info
+message SessionInfo {
+	int32 id = 1;
+	string uuid = 2;
+	string name = 3;
+	UserInfo user_info = 4;
+	Role role = 5;
+	bool processed = 6;
+	string language = 7;
+	int32 country_id = 8;
+	string country_code = 9;
+	string country_name = 10;
+	string display_sequence = 11;
+	string currency_name = 12;
+	string currency_iso_code = 13;
+	string currency_symbol = 14;
+	int32 standard_precision = 15;
+	int32 costing_precision = 16;
+	google.protobuf.Struct default_context = 17;
+}
+
+message SetSessionAttributeRequest {
+	string language = 1;
+	int32 warehouse_id = 2;
+}
+
+message Client {
+	int32 id = 1;
+	string uuid = 2;
+	string name = 3;
+	string description = 4;
+	string logo = 5;
+	string logo_report = 6;
+	string logo_web = 7;
+	string dictionary_code = 8;
+}
+
+// Role
+message Role {
+	int32 id = 1;
+	string uuid = 2;
+	string name = 3;
+	string description = 4;
+	Client client = 5;
+	bool is_can_report = 6;
+	bool is_can_export = 7;
+	bool is_personal_lock = 8;
+	bool is_personal_access = 9;
+	bool is_allow_info_account = 10;
+	bool is_allow_info_business_partner = 11;
+	bool is_allow_info_in_out = 12;
+	bool is_allow_info_order = 13;
+	bool is_allow_info_product = 14;
+	bool is_allow_info_schedule = 15;
+	bool is_allow_info_mrp = 16;
+	bool is_allow_html_view = 17;
+	bool is_allow_info_asset = 18;
+	bool is_allow_info_cash_journal = 19;
+	bool is_allow_info_invoice = 20;
+	bool is_allow_info_payment = 21;
+	bool is_allow_info_resource = 22;
+	bool is_allow_info_crp = 23;
+	bool is_allow_xls_view = 24;
+	bool is_show_accounting = 25;
+}
+message ListRolesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+}
+message ListRolesResponse {
+	int64 record_count = 1;
+	repeated Role roles = 2;
+	string next_page_token = 3;
+}
+
+
+// Organization
+message Organization {
+	int32 id = 1;
+	string uuid = 2;
+	string value = 3;
+	string name = 4;
+	string description = 5;
+	bool is_read_only = 6;
+	string duns = 7;
+	string tax_id = 8;
+	string phone = 9;
+	string phone2 = 10;
+	string fax = 11;
+	string corporate_branding_image = 12;
+}
+message ListOrganizationsResponse {
+	int64 record_count = 1;
+	repeated Organization organizations = 2;
+	string next_page_token = 4;
+}
+message ListOrganizationsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 role_id = 8;
+}
+
+
+// Warehouse
+message Warehouse {
+	int32 id = 1;
+	string uuid = 2;
+	string value = 3;
+	string name = 4;
+	string description = 5;
+}
+message ListWarehousesResponse {
+	int64 record_count = 1;
+	repeated Warehouse warehouses = 2;
+	string next_page_token = 3;
+}
+message ListWarehousesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 organization_id = 8;
+}
+
+
+// As Window, Process, Report, Browse, Workflow
+message DictionaryEntity {
+	int32 id = 1;
+	string uuid = 2;
+	string name = 3;
+	string description = 4;
+	string help = 5;
+}
+
+
+// Menu
+message Menu {
+	string id = 1;
+	string uuid = 2;
+	int32 internal_id = 19;
+	int32 parent_id = 3;
+	string sequence = 4;
+	string name = 5;
+	string description = 6;
+	bool is_summary = 7;
+	bool is_sales_transaction = 8;
+	bool is_read_only = 9;
+	// Supported References
+	optional string action = 10;
+	optional int32 action_id = 11;
+	optional string action_uuid = 12;
+	optional DictionaryEntity window = 13;
+	optional DictionaryEntity process = 14;
+	optional DictionaryEntity form = 15;
+	optional DictionaryEntity browser = 16;
+	optional DictionaryEntity workflow = 17;
+	// Tree menu childs
+	repeated Menu children = 18;
+}
+message MenuRequest {
+}
+message MenuResponse {
+	repeated Menu menus = 1;
+}
+
+
+//	Open ID
+message ListServicesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+}
+
+message ListServicesResponse {
+	repeated Service services = 1;
+}
+
+message Service {
+	int32 id = 1;
+	string display_name = 2;
+	string authorization_uri = 3;
+}
+
+message LoginOpenIDRequest {
+	string code_parameter = 1;
+	string state_parameter = 2;
+	string language = 3;
+	string client_version = 4;
+}
+
+enum DictionaryType {
+	UNKNOW = 0;
+	MENU = 1;
+	WINDOW = 2;
+	PROCESS = 3;
+	BROWSER = 4;
+	FORM = 5;
+}
+message GetDictionaryAccessRequest {
+	DictionaryType dictionary_type = 1;
+	int32 id = 2;
+}
+message GetDictionaryAccessResponse {
+	bool is_access = 1;
+	string message = 2;
+}

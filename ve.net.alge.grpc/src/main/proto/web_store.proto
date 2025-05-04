@@ -1,0 +1,809 @@
+/************************************************************************************
+ * Copyright (C) 2012-2018 E.R.P. Consultores y Asociados, C.A.                     *
+ * Contributor(s): Yamel Senih ysenih@erpya.com                                     *
+ * This program is free software: you can redistribute it and/or modify             *
+ * it under the terms of the GNU General Public License as published by             *
+ * the Free Software Foundation, either version 2 of the License, or                *
+ * (at your option) any later version.                                              *
+ * This program is distributed in the hope that it will be useful,                  *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                   *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                     *
+ * GNU General Public License for more details.                                     *
+ * You should have received a copy of the GNU General Public License                *
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.            *
+ ************************************************************************************/
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.spin.backend.grpc.store";
+option java_outer_classname = "ADempiereWebStore";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+// Base URL
+// /store/web-store/
+
+package store;
+
+//	Web Store Service used for ADempiere integration with vue store front api
+service WebStore {
+	//	Create Customer: POST /api/user/create
+	rpc CreateCustomer(CreateCustomerRequest) returns (Customer) {
+		option (google.api.http) = { 
+			post: "/store/web-store/user",
+			body: "*"
+		};
+	}
+	//  Reset Password from Store: POST /api/user/reset-password
+  	rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse) {
+		option (google.api.http) = { 
+			post: "/store/web-store/user/reset-password",
+			body: "*"
+		};
+	}
+	//  Change Password: POST /api/user/change-password
+	rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse) {
+		option (google.api.http) = { 
+			post: "/store/web-store/user/change-password",
+			body: "*"
+		};
+	}
+	//  Get Customer: GET /api/user/me
+	rpc GetCustomer(GetCustomerRequest) returns (Customer) {
+		option (google.api.http) = { get: "/store/web-store/user/me" };
+	}
+	//	Update Cutomer Info: POST /api/user/me
+	rpc UpdateCustomer(UpdateCustomerRequest) returns (Customer) {
+		option (google.api.http) = { 
+			post: "/store/web-store/user/me",
+			body: "*"
+		};
+	}
+	//  Get Stock: GET /api/stock/check/sku
+	rpc GetStock(GetStockRequest) returns (Stock) {
+		option (google.api.http) = { get: "/store/web-store/stock/{sku}" };
+	}
+	//  List Stock: GET /api/stock/list
+	rpc ListStocks(ListStocksRequest) returns (ListStocksResponse) {
+		option (google.api.http) = { get: "/store/web-store/stock/list/{sku}" };
+	}
+	//  List Products: GET /api/product/list
+	rpc ListProducts(ListProductsRequest) returns (ListProductsResponse) {
+		option (google.api.http) = { get: "/store/web-store/product/list" };
+	}
+	//  List Products: GET /api/product/render-list
+	rpc ListRenderProducts(ListRenderProductsRequest) returns (ListRenderProductsResponse) {
+		option (google.api.http) = { get: "/store/web-store/product/render-list" };
+	}
+	//	Service for get a resource from resource id: GET /img
+	rpc GetResource(GetResourceRequest) returns (stream Resource) {
+		option (google.api.http) = { get: "/store/web-store/img" };
+	}
+	//	Create Cart: POST /api/cart/create
+	rpc CreateCart(CreateCartRequest) returns (Cart) {
+		option (google.api.http) = { 
+			post: "/store/web-store/cart/create",
+			body: "*"
+		};
+	}
+	//	Pull Cart: GET /api/cart/pull
+	rpc GetCart(GetCartRequest) returns (Cart) {
+		option (google.api.http) = { get: "/store/web-store/cart/pull" };
+	}
+	//	Update Cart: POST /api/cart/update
+	rpc UpdateCart(UpdateCartRequest) returns (CartItem) {
+		option (google.api.http) = { 
+			post: "/store/web-store/cart/update",
+			body: "*"
+		};
+	}
+	//	Create Order: POST /api/order/create
+	rpc CreateOrder(CreateOrderRequest) returns (Order) {
+		option (google.api.http) = { 
+			post: "/store/web-store/order/create",
+			body: "*"
+		};
+	}
+	//	Get Payment Methods: GET /api/cart/payment-methods
+	rpc ListPaymentMethods(ListPaymentMethodsRequest) returns (ListPaymentMethodsResponse) {
+		option (google.api.http) = { get: "/store/web-store/cart/payment-methods" };
+	}
+	//	Get Shipping Methods: POST /api/cart/shipping-methods
+	rpc ListShippingMethods(ListShippingMethodsRequest) returns (ListShippingMethodsResponse) {
+		option (google.api.http) = { get: "/store/web-store/cart/shipping-methods" };
+	}
+	//	Get Shipping Information: POST /api/cart/shipping-information
+	rpc GetShippingInformation(GetShippingInformationRequest) returns (ShippingInformation) {
+		option (google.api.http) = { get: "/store/web-store/cart/shipping-information" };
+	}
+	//	Get Cart Totals: GET /api/cart/totals
+	rpc GetCartTotals(GetCartTotalsRequest) returns (CartTotals) {
+		option (google.api.http) = { get: "/store/web-store/cart/totals" };
+	}
+	//	Post Cart: POST /api/cart/delete
+	rpc DeleteCartItem(DeleteCartItemRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = { 
+			post: "/store/web-store/cart/delete",
+			body: "*"
+		};
+	}
+	//	GET Orders History: GET /api/user/order-history
+	rpc ListOrders(ListOrdersRequest) returns (ListOrdersResponse) {
+		option (google.api.http) = { get: "/store/web-store/user/order-history" };
+	}
+}
+
+//	https://sfa-docs.now.sh/guide/default-modules/api.html#get-vsbridgeuserorder-history
+message ListOrdersRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 cart_id = 8;
+}
+
+//	List of Orders
+message ListOrdersResponse {
+	int64 record_count = 1;
+	repeated Order orders = 2;
+	string next_page_token = 3;
+}
+
+//	https://docs.storefrontapi.com/guide/default-modules/api.html#post-api-cart-delete
+message DeleteCartItemRequest {
+	int32 cart_id = 1;
+	string sku = 2;
+	int32 product_id = 3;
+}
+
+//  Empty message
+message Empty {
+
+}
+
+//	https://docs.storefrontapi.com/guide/default-modules/api.html#get-api-cart-totals
+message GetCartTotalsRequest {
+	int32 cart_id = 1;
+}
+
+//	https://docs.storefrontapi.com/guide/default-modules/api.html#post-api-cart-shipping-information
+message GetShippingInformationRequest {
+	int32 cart_id = 1;
+	AddressRequest shipping_address = 2;
+	AddressRequest billing_address = 3;
+	string carrier_code = 4;
+	string method_code = 5;
+}
+
+//	https://docs.storefrontapi.com/guide/default-modules/api.html#post-api-user-me
+message UpdateCustomerRequest {
+	int32 id = 2;
+	int32 business_partner_group_id = 3;
+	google.protobuf.Timestamp created = 4;
+	google.protobuf.Timestamp updated = 5;
+	string organization_name = 6;
+	string email = 7;
+	string first_name = 8;
+	string last_name = 9;
+	int32 web_store_id = 10;
+	int32 website_id = 11;
+	int32 default_billing = 12;
+	int32 default_shipping = 13;
+	repeated AddressRequest addresses = 14;
+}
+
+//	Address information for request
+message AddressRequest {
+	int32 id = 1;
+	string first_name = 2;
+	string last_name = 3;
+	int32 location_id = 4;
+	string country_code = 5;
+	int32 region_id = 6;
+	string region_name = 7;
+	string city_name = 8;
+	string postal_code = 9;
+	string phone = 10;
+	string address1 = 11;
+	string address2 = 12;
+	string address3 = 13;
+	string address4 = 14;
+	bool is_default_billing = 15;
+	bool is_default_shipping = 16;
+}
+
+//	Shipping Information for Order
+message ShippingInformation {
+	Cart cart = 1;
+	repeated PaymentMethod payment_methods = 2;
+	repeated TotalSegment total_segments = 3;
+}
+
+//	Cart Totals
+message CartTotals {
+	Cart cart = 1;
+	repeated TotalSegment total_segments = 2;
+}
+
+//	Segment for Total
+message TotalSegment {
+	string code = 1;
+	string name = 2;
+	double value = 3;
+	string area = 4;
+	repeated ExtensionAttribute taxes = 5;
+
+}
+
+//	Attribute for Total Segments
+message ExtensionAttribute {
+	double amount = 1;
+	int32 group_id = 2;
+	repeated Rate rates = 3;
+}
+
+//	Tax Rate
+message Rate {
+	double rate = 1;
+	string name = 2;
+}
+
+//	https://docs.storefrontapi.com/guide/default-modules/api.html#post-api-cart-shipping-methods
+message ListShippingMethodsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 cart_id = 9;
+	AddressRequest shipping_address = 10;
+}
+
+//	List of Payment Methods
+message ListShippingMethodsResponse {
+	int64 record_count = 1;
+	repeated ShippingMethod shipping_methods = 2;
+	string next_page_token = 3;
+}
+
+//	Shipping Method
+message ShippingMethod {
+	int32 id = 1;
+	string carrier_code = 2;
+	string method_code = 3;
+	string carrier_name = 4;
+	string method_name = 5;
+	double amount = 6;
+	double tax_rate = 7;
+	bool is_available = 8;
+}
+
+
+//	https://docs.storefrontapi.com/guide/default-modules/api.html#get-api-cart-payment-methods
+message ListPaymentMethodsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 cart_id = 8;
+}
+
+//	List of Payment Methods
+message ListPaymentMethodsResponse {
+	int64 record_count = 1;
+	repeated PaymentMethod payment_methods = 2;
+	string next_page_token = 3;
+}
+
+//	Payment Method
+message PaymentMethod {
+	int32 id = 1;
+	string code = 2;
+	string name = 3;
+}
+
+//	https://docs.storefrontapi.com/guide/default-modules/api.html#post-api-order-create
+message CreateOrderRequest {
+	int32 cart_id = 1;
+	int32 customer_id = 2;
+	int32 user_id = 3;
+	AddressRequest shipping_address = 4;
+	AddressRequest billing_address = 5;
+	string method_code = 6;
+	string carrier_code = 7;
+	string payment_method_code = 8;
+	repeated ProductOrderLine products = 9;
+	repeated PaymentRequest payments = 10;
+}
+
+//	Product used for create order line
+message ProductOrderLine {
+	int32 id = 1;
+	double quantity = 2;
+	string sku = 3;
+	repeated ConfigurableItemOption configurable_item_options = 4;
+}
+
+//	Payment detail for request
+message PaymentRequest {
+	int32 bank_id = 1;
+	string reference_no = 2;
+	string description = 3;
+	double amount = 4;
+	google.protobuf.Timestamp payment_date = 5;
+	string payment_method_code = 6;
+	string currency_code = 7;
+	AddressRequest billing_address = 8;
+}
+
+//	Order
+message Order {
+	int32 id = 1;
+	string document_no = 2;
+	google.protobuf.Timestamp created = 3;
+	google.protobuf.Timestamp updated = 4;
+	google.protobuf.Timestamp transmited = 5;
+	Address shipping_address = 6;
+	Address billing_address = 7;
+	string method_code = 8;
+	string carrier_code = 9;
+	string payment_method_code = 10;
+	repeated OrderLine order_lines = 11;
+}
+
+//	Order Line response
+message OrderLine {
+	string sku = 1;
+	string name = 2;
+	double quantity = 3;
+	double price = 4;
+		enum ProductType {
+		//	Simple Product
+		SIMPLE = 0;
+		//	Configurable Product
+		CONFIGURABLE = 1;
+		//	Grouped Product
+		GROUPED = 2;
+		//	Virtual Product
+		VIRTUAL = 3;
+		//	Bundle Product
+		BUNDLE = 4;
+		//	Downloadable Product
+		DOWNLOADABLE = 5;
+		//	Gift Cards
+		GIFT = 6;
+	}
+	ProductType product_type = 5;
+	
+}
+
+//	https://docs.storefrontapi.com/guide/default-modules/api.html#post-api-cart-update
+message UpdateCartRequest {
+	int32 cart_id = 1;
+	bool is_guest = 2;
+	string sku = 3;
+	double quantity = 4;
+	repeated ConfigurableItemOption configurable_item_options = 5;
+}
+
+//	Configurable Product Options
+message ConfigurableItemOption {
+	string id = 1;
+	string value = 2;
+}
+
+//	https://docs.storefrontapi.com/guide/default-modules/api.html#get-api-cart-pull
+message GetCartRequest {
+	int32 cart_id = 1;
+	bool is_guest = 2;
+}
+
+// https://docs.storefrontapi.com/guide/default-modules/api.html#post-api-cart-create
+message CreateCartRequest {
+	bool is_guest = 2;
+}
+
+//	Cart for store
+message Cart {
+	int32 id = 1;
+	double grand_total = 2;
+	double subtotal = 3;
+	double discount_amount = 4;
+	double subtotal_with_discount = 5;
+	double tax_amount = 6;
+	double shipping_amount = 7;
+	double shipping_discount_amount = 8;
+	double shipping_tax_amount = 9;
+	double base_shipping_tax_amount = 10;
+	double subtotal_incl_tax = 11;
+	double shipping_incl_tax = 12;
+	string base_currency_code = 13;
+	string quote_currency_code = 14;
+	int32 items_quantity = 15;
+	repeated CartItem items = 16;
+}
+
+//	Cart Item
+message CartItem {
+	int32 product_id = 1;
+	string sku = 2;
+	double quantity = 3;
+	string name = 4;
+	double price = 5;
+	enum ProductType {
+		//	Simple Product
+		SIMPLE = 0;
+		//	Configurable Product
+		CONFIGURABLE = 1;
+		//	Grouped Product
+		GROUPED = 2;
+		//	Virtual Product
+		VIRTUAL = 3;
+		//	Bundle Product
+		BUNDLE = 4;
+		//	Downloadable Product
+		DOWNLOADABLE = 5;
+		//	Gift Cards
+		GIFT = 6;
+	}
+	ProductType product_type = 6;
+	double row_total = 7;
+	double row_total_with_discount = 8;
+	double tax_amount = 9;
+	double tax_percent = 10;
+	double discount_amount = 11;
+	double discount_percent = 12;
+	double price_incl_tax = 13;
+	double row_total_incl_tax = 14;
+	double base_row_total_incl_tax = 15;
+	repeated ConfigurableItemOption configurable_item_options = 16;
+}
+
+// https://docs.storefrontapi.com/guide/default-modules/api.html#image-module
+message GetResourceRequest {
+	int32 resource_id = 1;
+	string resource_name = 2;
+	int64 width = 3;
+	int64 height = 4;
+	enum Operation {
+		RESIZE = 0;
+		CROP = 1;
+		FIX = 2;
+		IDENTIFY = 3;
+	}
+	//	Operation
+	Operation operation = 5;
+}
+
+// Resource Chunk
+message Resource {
+    bytes data = 1;
+}
+
+
+//	https://docs.storefrontapi.com/guide/default-modules/api.html#post-api-user-create
+message CreateCustomerRequest {
+	string email = 2;
+	string first_name = 3;
+	string last_name = 4;
+	string password = 5;
+}
+
+//	https://docs.storefrontapi.com/guide/default-modules/api.html#get-api-user-me
+message GetCustomerRequest {
+}
+
+//	https://docs.storefrontapi.com/guide/default-modules/api.html#get-api-stock-check-sku
+message GetStockRequest {
+	string sku = 2;
+	string store_code = 3;
+}
+
+//	https://docs.storefrontapi.com/guide/default-modules/api.html#get-api-stock-list
+message ListStocksRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string sku = 8;
+	string store_code = 9;
+}
+
+//	List of Stock
+message ListStocksResponse {
+	int64 record_count = 1;
+	repeated Stock stocks = 2;
+	string next_page_token = 3;
+}
+
+//	https://docs.storefrontapi.com/guide/default-modules/api.html#api-product-list
+message ListProductsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	repeated string skus = 8;
+}
+
+//	List of Products
+message ListProductsResponse {
+	int64 record_count = 1;
+	repeated Product products = 2;
+	string next_page_token = 3;
+}
+
+//	Stock
+message Stock {
+	int32 product_id = 1;
+	int32 store_id = 2;
+	double quantity = 3;
+	bool is_in_stock = 4;
+	bool is_decimal_quantity = 5;
+	bool is_show_default_notification_message = 6;
+	bool is_use_config_minimum_quantity = 7;
+    double minimum_quantity = 8;
+    bool is_use_config_minimum_sale_quantity = 9;
+    double minimum_sale_quantity = 10;
+    bool is_use_config_maximum_sale_quantity = 11;
+    double maximum_sale_quantity = 12;
+    bool is_use_config_backorders = 13;
+    double backorders = 14;
+    bool is_use_config_notify_stock_quantity = 15;
+    double notify_stock_quantity = 16;
+    bool is_use_config_quantity_increments = 17;
+    double quantity_increments = 18;
+    bool is_use_config_enable_quantity_increments = 19;
+    bool is_enable_quantity_increments = 20;
+    bool is_use_config_manage_stock = 21;
+    bool is_manage_stock = 22;
+    google.protobuf.Timestamp low_stock_date = 23;
+    bool is_decimal_divided = 24;
+    double stock_status_changed_auto = 25;
+}
+
+//	Product
+message Product {
+	int32 id = 1;
+	string sku = 2;
+	string name = 3;
+	double price = 4;
+	enum Status {
+		STATUS_UNKNOW = 0;
+		ENABLED = 1;
+		DISABLED = 2;
+	}
+	Status status = 5;
+	enum Visibility {
+		VISIBILITY_UNKNOW = 0;
+		NOT_VISIBLE = 1;
+		IN_CATALOG = 2;
+		IN_SEARCH = 3;
+		BOTH = 4;
+	}
+	Visibility visibility = 6;
+	int32 product_group_id = 7;
+	google.protobuf.Timestamp created = 8;
+	google.protobuf.Timestamp updated = 9;
+	repeated string product_links = 10;
+	repeated string tier_prices = 11;
+	repeated Attribute custom_attributes = 12;
+	Criteria search_criteria = 13;
+}
+
+//	https://docs.storefrontapi.com/guide/default-modules/api.html#api-product-list
+message ListRenderProductsRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	repeated string skus = 8;
+}
+
+//	List of Products Rendered
+message ListRenderProductsResponse {
+	int64 record_count = 1;
+	repeated RenderProduct render_products = 2;
+	string next_page_token = 3;
+}
+
+//	Product Rendered
+message RenderProduct {
+	int32 id = 1;
+	string name = 2;
+	string type = 3;
+	int32 store_id = 4;
+	string url = 5;
+	enum ProductType {
+		//	Simple Product
+		SIMPLE = 0;
+		//	Configurable Product
+		CONFIGURABLE = 1;
+		//	Grouped Product
+		GROUPED = 2;
+		//	Virtual Product
+		VIRTUAL = 3;
+		//	Bundle Product
+		BUNDLE = 4;
+		//	Downloadable Product
+		DOWNLOADABLE = 5;
+		//	Gift Cards
+		GIFT = 6;
+	}
+	ProductType product_type = 6;
+	PriceInfo price_info = 7;
+}
+
+
+//	Product Price Info
+message PriceInfo {
+	double final_price = 1;
+	double max_price = 2;
+	double max_regular_price = 3;
+	double minimal_regular_price = 4;
+	double special_price = 5;
+	double minimal_price = 6;
+	double regular_price = 7;
+	FormattedPrice formatted_price = 8;
+	TaxAdjustment tax_adjustment = 9;
+	string currency_code = 10;
+}
+
+//	Formatted Price
+message FormattedPrice {
+	string final_price = 1;
+	string max_price = 2;
+	string minimal_price = 3;
+	string max_regular_price = 4;
+	string minimal_regular_price = 5;
+	string special_price = 6;
+	string regular_price = 7;
+}
+
+//	Tax Adjustments
+message TaxAdjustment {
+	double final_price = 1;
+	double max_price = 2;
+	double max_regular_price = 3;
+	double minimal_regular_price = 4;
+	double special_price = 5;
+	double minimal_price = 6;
+	double regular_price = 7;
+	string weee_adjustment = 8;
+	FormattedPrice formatted_price = 9;
+}
+
+//	Attribute
+message Attribute {
+	string attribute_code = 1;
+	string value = 2;
+	repeated string values = 3;
+}
+
+//	Condition
+message Criteria {
+	repeated Condition conditions = 1;
+}
+
+// Condition for query data
+message Condition {
+	string columnName = 1;
+	string value = 2;
+	enum Operator {
+		EQUAL = 0;
+		NOT_EQUAL = 1;
+		LIKE = 2;
+		NOT_LIKE = 3;
+		GREATER = 4;
+		GREATER_EQUAL = 5;
+		LESS = 6;
+		LESS_EQUAL = 7;
+		BETWEEN = 8;
+		NOT_NULL = 9;
+		NULL = 10;
+		IN = 11;
+		NOT_IN = 12;
+	}
+	//	Operators
+	Operator operator = 3;
+}
+
+//
+message Customer {
+	int32 id = 1;
+	int32 business_partner_group_id = 2;
+	google.protobuf.Timestamp created = 3;
+	google.protobuf.Timestamp updated = 4;
+	string organization_name = 5;
+	string email = 6;
+	string first_name = 7;
+	string last_name = 8;
+	int32 web_store_id = 9;
+	int32 website_id = 10;
+	repeated Address addresses = 11;
+}
+
+//	Address
+message Address {
+	int32 id = 1;
+	string first_name = 2;
+	string last_name = 3;
+	//	Location
+	Region region = 4;
+	City city = 5;
+	string address1 = 6;
+	string address2 = 7;
+	string address3 = 8;
+	string address4 = 9;
+	string phone = 10;
+	string postal_code = 11;
+	string country_code = 12;
+	bool is_default_shipping = 13;
+	bool is_default_billing = 14;
+}
+
+//	City
+message City {
+	int32 id = 1;
+	string name = 2;
+}
+
+//	Region
+message Region {
+	int32 id = 1;
+	string name = 2;
+}
+
+// https://docs.storefrontapi.com/guide/default-modules/api.html#post-api-user-reset-password
+message ResetPasswordRequest {
+  
+	string user_name = 2;
+	string email = 3;
+}
+
+// Reset Password Response
+message ResetPasswordResponse {
+	enum ResponseType {
+		OK = 0;
+		USER_NOT_FOUND = 1;
+		TOKEN_NOT_FOUND = 2;
+		ERROR = 3;
+	}
+	ResponseType response_type = 1;
+}
+
+// https://docs.storefrontapi.com/guide/default-modules/api.html#post-api-user-change-password
+message ChangePasswordRequest {
+  
+	string current_password = 2;
+	string new_password = 3;
+}
+
+// Change Password Response
+message ChangePasswordResponse {
+	enum ResponseType {
+		OK = 0;
+		USER_NOT_FOUND = 1;
+		TOKEN_NOT_FOUND = 2;
+		ERROR = 3;
+	}
+	ResponseType response_type = 1;
+}

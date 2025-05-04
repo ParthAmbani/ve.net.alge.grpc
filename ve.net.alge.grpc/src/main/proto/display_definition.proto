@@ -1,0 +1,919 @@
+/************************************************************************************
+ * Copyright (C) 2018-present E.R.P. Consultores y Asociados, C.A.                  *
+ * Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com                     *
+ * This program is free software: you can redistribute it and/or modify             *
+ * it under the terms of the GNU General Public License as published by             *
+ * the Free Software Foundation, either version 2 of the License, or                *
+ * (at your option) any later version.                                              *
+ * This program is distributed in the hope that it will be useful,                  *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                   *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                     *
+ * GNU General Public License for more details.                                     *
+ * You should have received a copy of the GNU General Public License                *
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.            *
+ ************************************************************************************/
+
+ syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.spin.backend.grpc.display_definition";
+option java_outer_classname = "ADempiereDisplayDefinition";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+// import "base_data_type.proto";
+
+// Base URL
+// /display-definition/
+
+package display_definition;
+
+service DisplayDefinition {
+
+	// Display Definition Metadata
+	rpc ExistsDisplayDefinitionsMetadata(ExistsDisplayDefinitionMetadataRequest) returns (ExistsDisplayDefinitionMetadataResponse) {
+		option (google.api.http) = {
+			get: "/display-definition/definitions/{table_name}/exists"
+			additional_bindings: {
+				get: "/display-definition/definitions/id/{table_id}/exists"
+			}
+		};
+	}
+	rpc ListDisplayDefinitionsMetadata(ListDisplayDefinitionsMetadataRequest) returns (ListDisplayDefinitionsMetadataResponse) {
+		option (google.api.http) = {
+			get: "/display-definition/definitions/{table_name}"
+			additional_bindings: {
+				get: "/display-definition/definitions/id/{table_id}"
+			}
+		};
+	}
+	rpc ListDisplayDefinitionFieldsMetadata(ListDisplayDefinitionFieldsMetadataRequest) returns (ListDisplayDefinitionFieldsMetadataResponse) {
+		option (google.api.http) = {
+			get: "/display-definition/definitions/{display_definition_id}/fields"
+		};
+	}
+
+	// Calendar
+	rpc ListCalendarsData(ListCalendarsDataRequest) returns (ListCalendarsDataResponse) {
+		option (google.api.http) = {
+			get: "/display-definition/calendars/{id}"
+		};
+	}
+
+	// Expand/Collapse
+	rpc ListExpandCollapsesDefinition(ListExpandCollapsesDefinitionRequest) returns (ListExpandCollapsesDefinitionResponse) {
+		option (google.api.http) = {
+			get: "/display-definition/expand-collapses/{id}/definitions"
+		};
+	}
+	rpc ListExpandCollapsesData(ListExpandCollapsesDataRequest) returns (ListExpandCollapsesDataResponse) {
+		option (google.api.http) = {
+			get: "/display-definition/expand-collapses/{id}"
+		};
+	}
+
+	// General
+	rpc ListGeneralsData(ListGeneralsDataRequest) returns (ListGeneralsDataResponse) {
+		option (google.api.http) = {
+			get: "/display-definition/generals/{id}"
+		};
+	}
+
+	// Hierarchies
+	rpc ListHierarchiesData(ListHierarchiesDataRequest) returns (ListHierarchiesDataResponse) {
+		option (google.api.http) = {
+			get: "/display-definition/hierarchies/{id}"
+		};
+	}
+
+	// Kanban
+	rpc ListKanbansDefinition(ListKanbansDefinitionRequest) returns (ListKanbansDefinitionResponse) {
+		option (google.api.http) = {
+			get: "/display-definition/kanbans/{id}/definitions"
+		};
+	}
+	rpc ListKanbansData(ListKanbansDataRequest) returns (ListKanbansDataResponse) {
+		option (google.api.http) = {
+			get: "/display-definition/kanbans/{id}"
+		};
+	}
+
+	// Mosaic
+	rpc ListMosaicsData(ListMosaicsDataRequest) returns (ListMosaicsDataResponse) {
+		option (google.api.http) = {
+			get: "/display-definition/mosaics/{id}"
+		};
+	}
+
+	// Resource
+	rpc ListResourcesData(ListResourcesDataRequest) returns (ListResourcesDataResponse) {
+		option (google.api.http) = {
+			get: "/display-definition/resources/{id}"
+		};
+	}
+
+	// Timeline
+	rpc ListTimelinesData(ListTimelinesDataRequest) returns (ListTimelinesDataResponse) {
+		option (google.api.http) = {
+			get: "/display-definition/timelines/{id}"
+		};
+	}
+
+	// Workflow
+	rpc ListWorkflowsDefinition(ListWorkflowsDefinitionRequest) returns (ListWorkflowsDefinitionResponse) {
+		option (google.api.http) = {
+			get: "/display-definition/workflows/{id}/definitions"
+		};
+	}
+	rpc ListWorkflowsData(ListWorkflowsDataRequest) returns (ListWorkflowsDataResponse) {
+		option (google.api.http) = {
+			get: "/display-definition/workflows/{id}"
+		};
+	}
+
+	// CRUD Data Entry
+	rpc CreateDataEntry(CreateDataEntryRequest) returns (DataEntry) {
+		option (google.api.http) = {
+			post: "/display-definition/{display_definition_id}/entries",
+			body: "*"
+		};
+	}
+	rpc ReadDataEntry(ReadDataEntryRequest) returns (DataEntry) {
+		option (google.api.http) = {
+			get: "/display-definition/{display_definition_id}/entries/{id}"
+		};
+	}
+	rpc UpdateDataEntry(UpdateDataEntryRequest) returns (DataEntry) {
+		option (google.api.http) = {
+			patch: "/display-definition/{display_definition_id}/entries/{id}",
+			body: "*"
+		};
+	}
+	rpc DeleteDataEntry(DeleteDataEntryRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = {
+			delete: "/display-definition/{display_definition_id}/entries/{id}"
+		};
+	}
+
+	// CRUD Data Entry with Resource
+	rpc CreateDataEntryResource(CreateDataEntryRequest) returns (DataEntry) {
+		option (google.api.http) = {
+			post: "/display-definition/{display_definition_id}/entries/resources",
+			body: "*"
+		};
+	}
+	rpc ReadDataEntryResource(ReadDataEntryRequest) returns (DataEntry) {
+		option (google.api.http) = {
+			get: "/display-definition/{display_definition_id}/entries/{id}/resources"
+		};
+	}
+	rpc UpdateDataEntryResource(UpdateDataEntryRequest) returns (DataEntry) {
+		option (google.api.http) = {
+			patch: "/display-definition/{display_definition_id}/entries/{id}/resources",
+			body: "*"
+		};
+	}
+	rpc DeleteDataEntryResource(DeleteDataEntryRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = {
+			delete: "/display-definition/{display_definition_id}/entries/{id}/resources"
+		};
+	}
+
+	//	BusinessPartner
+	rpc CreateBusinessPartner(CreateBusinessPartnerRequest) returns (BusinessPartner) {
+		option (google.api.http) = {
+			post: "/display-definition/{display_definition_id}/business-partners",
+			body: "*"
+		};
+	}
+	rpc GetBusinessPartner(GetBusinessPartnerRequest) returns (BusinessPartner) {
+		option (google.api.http) = {
+			get: "/display-definition/{display_definition_id}/business-partners/{id}"
+		};
+	}
+	rpc UpdateBusinessPartner(UpdateBusinessPartnerRequest) returns (BusinessPartner) {
+		option (google.api.http) = {
+			put: "/display-definition/{display_definition_id}/business-partners/{id}",
+			body: "*"
+		};
+	}
+
+}
+
+
+
+message ExistsDisplayDefinitionMetadataRequest {
+	string table_name = 1;
+	int32 table_id = 2;
+	bool only_references = 3;
+}
+message ExistsDisplayDefinitionMetadataResponse {
+	int32 record_count = 1;
+	repeated string type_filer = 2;
+}
+message ListDisplayDefinitionsMetadataRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	string context_attributes = 8;
+	bool is_only_active_records = 9;
+	// custom filters
+	string table_name = 10;
+	int32 table_id = 11;
+	repeated string type_filer = 12;
+	bool only_references = 13;
+	bool is_only_field = 14;
+}
+
+enum DefinitionType {
+	TYPE_UNKNOW = 0;
+	CALENDAR = 1;
+	EXPAND_COLLAPSE = 2;
+	GENERAL = 3;
+	HIERARCHY = 4;
+	KANBAN = 5;
+	MOSAIC = 6;
+	RESOURCE = 7; // As Gannt
+	TIMELINE = 8;
+	WORKFLOW = 9;
+}
+message DefinitionMetadata {
+	int32 id = 1;
+	string uuid = 2;
+	string value = 3;
+	string name = 4;
+	string description = 5;
+	string display_type = 6;
+	DefinitionType type = 7;
+	optional string date_column = 8;
+	optional string valid_from_column = 9;
+	optional string valid_to_column = 10;
+	optional string group_column = 11;
+	string table_name = 12;
+	int32 table_id = 13;
+	int32 parent_display_definition_id = 14;
+	optional string link_column_name = 15;
+	optional string parent_column_name = 16;
+	bool is_resource = 17;
+	repeated FieldDefinition field_definitions = 18;
+	optional DefinitionMetadata child_display_definition = 19;
+	repeated string context_column_names = 20;
+	bool is_info_record = 21;
+	bool is_insert_record = 22;
+}
+message ListDisplayDefinitionsMetadataResponse {
+	int64 record_count = 1;
+	repeated DefinitionMetadata records = 2;
+	string next_page_token = 3;
+}
+// Field Definition
+message FieldGroup {
+	int32 id = 1;
+	string uuid = 2;
+	string name = 3;
+	string field_group_type = 4;
+}
+message DependentFieldDefinition {
+	int32 parent_id = 1;
+	string parent_uuid = 2;
+	string parent_name = 3;
+	string id = 4;
+	string uuid = 5;
+	int32 internal_id = 6;
+	string column_name = 7;
+}
+message Reference {
+	string table_name = 1;
+	int32 reference_id = 2;
+	int32 reference_value_id = 3;
+	repeated string context_column_names = 4;
+}
+message FieldDefinition {
+	string id = 1;
+	string uuid = 2;
+	int32 internal_id = 3;
+	int32 display_definition_id = 4;
+	string column_name = 5;
+	string name = 6;
+	string description = 7;
+	string help = 8;
+	int32 display_type = 9;
+	int32 sequence = 10;
+	bool is_displayed = 11;
+	string display_logic = 12;
+	bool is_read_only = 13;
+	string mandatory_logic = 14;
+	bool is_mandatory = 15;
+	string read_only_logic = 16;
+	string default_value = 17;
+	bool is_displayed_grid = 18;
+	int32 seq_no_grid = 19;
+	optional FieldGroup field_group = 21;
+	bool is_heading = 22;
+	bool is_field_only = 23;
+	bool is_encrypted = 24;
+	bool is_quick_entry = 25;
+	int32 sort_no = 26;
+	//
+	bool is_insert_record = 27;
+	bool is_update_record = 28;
+	bool is_allow_copy = 29;
+	bool is_selection_column = 30;
+	// External Info
+	repeated string context_column_names = 31;
+	repeated DependentFieldDefinition dependent_fields = 32;
+	optional Reference reference = 33;
+}
+
+
+message ListDisplayDefinitionFieldsMetadataRequest {
+	int32 display_definition_id = 1;
+}
+message ListDisplayDefinitionFieldsMetadataResponse {
+	int64 field_definitions_count = 1;
+	repeated FieldDefinition field_definitions = 2;
+}
+
+
+
+// Calendar
+message CalendarEntry {
+	int32 id = 1;
+	string uuid = 2;
+	string title = 3;
+	string description = 4;
+	bool is_active = 5;
+	bool is_read_only = 6;
+	google.protobuf.Timestamp valid_from = 7;
+	google.protobuf.Timestamp valid_to = 8;
+	bool is_confirmed = 9;
+	google.protobuf.Struct fields = 10;
+}
+message ListCalendarsDataRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 window_id = 8;
+	int32 tab_id = 9;
+	string context_attributes = 10;
+	string record_reference_uuid = 11;
+	//
+	int32 id = 12;
+}
+message ListCalendarsDataResponse {
+	int64 record_count = 1;
+	repeated CalendarEntry records = 2;
+	string next_page_token = 3;
+}
+
+
+
+// Expand/Collapse Definition
+message ExpandCollapseGroup {
+	string value = 1;
+	string name = 2;
+	int32 sequence = 3;
+	repeated ExpandCollapseEntry records = 4;
+}
+message ListExpandCollapsesDefinitionRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 window_id = 8;
+	int32 tab_id = 9;
+	string context_attributes = 10;
+	string record_reference_uuid = 11;
+	//
+	int32 id = 12;
+}
+message ListExpandCollapsesDefinitionResponse {
+	string name = 1;
+	string description = 2;
+	string column_name = 3;
+	repeated ExpandCollapseGroup groups = 4;
+}
+
+// Expand/Collapse
+message ExpandCollapseEntry {
+	int32 id = 1;
+	string uuid = 2;
+	string title = 3;
+	string description = 4;
+	bool is_active = 5;
+	bool is_read_only = 6;
+	string group_id = 7;
+	int32 sequence = 8;
+	google.protobuf.Struct fields = 9;
+}
+message ListExpandCollapsesDataRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 window_id = 8;
+	int32 tab_id = 9;
+	string context_attributes = 10;
+	string record_reference_uuid = 11;
+	//
+	int32 id = 12;
+}
+message ListExpandCollapsesDataResponse {
+	string name = 1;
+	string description = 2;
+	string column_name = 3;
+	repeated ExpandCollapseGroup groups = 4;
+	int64 record_count = 5;
+	repeated ExpandCollapseEntry records = 6;
+	string next_page_token = 7;
+}
+
+
+
+// General
+message GeneralEntry {
+	int32 id = 1;
+	string uuid = 2;
+	string title = 3;
+	string description = 4;
+	bool is_active = 5;
+	bool is_read_only = 6;
+	google.protobuf.Struct fields = 7;
+}
+message ListGeneralsDataRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 window_id = 8;
+	int32 tab_id = 9;
+	string context_attributes = 10;
+	string record_reference_uuid = 11;
+	//
+	int32 id = 12;
+}
+message ListGeneralsDataResponse {
+	string name = 1;
+	string description = 2;
+	int64 record_count = 3;
+	repeated GeneralEntry records = 4;
+	string next_page_token = 5;
+}
+
+
+
+// Hierarchy
+message HierarchyChild {
+	int32 id = 1;
+	string uuid = 2;
+	string title = 3;
+	string description = 4;
+	bool is_active = 5;
+	bool is_read_only = 6;
+	string parent_id = 7;
+	int32 sequence = 8;
+	google.protobuf.Struct fields = 9;
+}
+message HierarchyParent {
+	int32 id = 1;
+	string uuid = 2;
+	string title = 3;
+	string description = 4;
+	bool is_active = 5;
+	bool is_read_only = 6;
+	int32 link_id = 7;
+	google.protobuf.Struct fields = 8;
+	repeated HierarchyChild childs = 9;
+}
+message ListHierarchiesDataRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 window_id = 8;
+	int32 tab_id = 9;
+	string context_attributes = 10;
+	string record_reference_uuid = 11;
+	//
+	int32 id = 12;
+}
+message ListHierarchiesDataResponse {
+	string name = 1;
+	string description = 2;
+	int64 record_count = 3;
+	repeated HierarchyParent records = 4;
+	string next_page_token = 5;
+}
+
+
+
+// Kanban Definition
+message KanbanStep {
+	string value = 1;
+	string name = 2;
+	int32 sequence = 3;
+	repeated KanbanEntry records = 5;
+}
+message ListKanbansDefinitionRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 window_id = 8;
+	int32 tab_id = 9;
+	string context_attributes = 10;
+	string record_reference_uuid = 11;
+	//
+	int32 id = 12;
+}
+message ListKanbansDefinitionResponse {
+	string name = 1;
+	string description = 2;
+	string column_name = 3;
+	repeated KanbanStep steps = 4;
+}
+
+// Kanban
+message KanbanEntry {
+	int32 id = 1;
+	string uuid = 2;
+	string title = 3;
+	string description = 4;
+	bool is_active = 5;
+	bool is_read_only = 6;
+	string group_id = 7;
+	int32 sequence = 8;
+	google.protobuf.Struct fields = 9;
+}
+message ListKanbansDataRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 window_id = 8;
+	int32 tab_id = 9;
+	string context_attributes = 10;
+	string record_reference_uuid = 11;
+	//
+	int32 id = 12;
+}
+message ListKanbansDataResponse {
+	string name = 1;
+	string description = 2;
+	string column_name = 3;
+	repeated KanbanStep steps = 4;
+	int64 record_count = 5;
+	repeated KanbanEntry records = 6;
+	string next_page_token = 7;
+}
+
+
+
+// Mosaic
+message MosaicEntry {
+	int32 id = 1;
+	string uuid = 2;
+	string title = 3;
+	string description = 4;
+	bool is_active = 5;
+	bool is_read_only = 6;
+	google.protobuf.Struct fields = 8;
+}
+message ListMosaicsDataRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 window_id = 8;
+	int32 tab_id = 9;
+	string context_attributes = 10;
+	string record_reference_uuid = 11;
+	//
+	int32 id = 12;
+}
+message ListMosaicsDataResponse {
+	string name = 1;
+	string description = 2;
+	int64 record_count = 3;
+	repeated MosaicEntry records = 4;
+	string next_page_token = 5;
+}
+
+
+
+// Resource
+message ResourceEntry {
+	int32 id = 1;
+	string uuid = 2;
+	string title = 3;
+	string description = 4;
+	bool is_active = 5;
+	bool is_read_only = 6;
+	google.protobuf.Timestamp valid_from = 7;
+	google.protobuf.Timestamp valid_to = 8;
+	bool is_confirmed = 9;
+	string name = 10;
+	string group_name = 11;
+	string color = 12;
+	google.protobuf.Struct fields = 13;
+}
+message ResourceGroup {
+	string name = 1;
+	string color = 2;
+	repeated ResourceGroupChild resources = 3;
+}
+message ResourceGroupChild {
+	int32 id = 1;
+	string uuid = 2;
+	string name = 3;
+	string color = 4;
+}
+message ListResourcesDataRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 window_id = 8;
+	int32 tab_id = 9;
+	string context_attributes = 10;
+	string record_reference_uuid = 11;
+	//
+	int32 id = 12;
+}
+message ListResourcesDataResponse {
+	int64 record_count = 1;
+	repeated ResourceEntry records = 2;
+	repeated ResourceGroup groups = 3;
+	string next_page_token = 4;
+}
+
+
+
+// Timeline
+message TimelineEntry {
+	int32 id = 1;
+	string uuid = 2;
+	string title = 3;
+	string description = 4;
+	bool is_active = 5;
+	bool is_read_only = 6;
+	google.protobuf.Timestamp date = 7;
+	google.protobuf.Struct fields = 8;
+}
+message ListTimelinesDataRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 window_id = 8;
+	int32 tab_id = 9;
+	string context_attributes = 10;
+	string record_reference_uuid = 11;
+	//
+	int32 id = 12;
+}
+message ListTimelinesDataResponse {
+	int64 record_count = 1;
+	repeated TimelineEntry records = 2;
+	string next_page_token = 3;
+}
+
+
+
+// Workflow Definition
+message WorkflowStep {
+	string value = 1;
+	string name = 2;
+	int32 sequence = 3;
+}
+message ListWorkflowsDefinitionRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 window_id = 8;
+	int32 tab_id = 9;
+	string context_attributes = 10;
+	string record_reference_uuid = 11;
+	//
+	int32 id = 12;
+}
+message ListWorkflowsDefinitionResponse {
+	string name = 1;
+	string description = 2;
+	string column_name = 3;
+	repeated WorkflowStep steps = 4;
+}
+
+
+
+// Workflow Data
+message WorkflowEntry {
+	int32 id = 1;
+	string uuid = 2;
+	string title = 3;
+	string description = 4;
+	bool is_active = 5;
+	bool is_read_only = 6;
+	string group_id = 7;
+	int32 sequence = 8;
+	google.protobuf.Struct fields = 9;
+}
+message ListWorkflowsDataRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+	int32 window_id = 8;
+	int32 tab_id = 9;
+	string context_attributes = 10;
+	string record_reference_uuid = 11;
+	//
+	int32 id = 12;
+}
+message ListWorkflowsDataResponse {
+	string name = 1;
+	string description = 2;
+	string column_name = 3;
+	repeated WorkflowStep steps = 4;
+	int64 record_count = 5;
+	repeated WorkflowEntry records = 6;
+	string next_page_token = 7;
+}
+
+
+
+// Data Entry CRUD
+message DataEntry {
+	int32 id = 1;
+	string uuid = 2;
+	string title = 3;
+	string description = 4;
+	bool is_active = 5;
+	bool is_read_only = 6;
+	google.protobuf.Struct fields = 8;
+}
+message CreateDataEntryRequest {
+	int32 display_definition_id = 1;
+	google.protobuf.Struct attributes = 2;
+	string context_attributes = 3;
+}
+message ReadDataEntryRequest {
+	int32 display_definition_id = 1;
+	int32 id = 2;
+}
+message UpdateDataEntryRequest {
+	int32 display_definition_id = 1;
+	int32 id = 2;
+	google.protobuf.Struct attributes = 3;
+}
+message DeleteDataEntryRequest {
+	int32 display_definition_id = 1;
+	int32 id = 2;
+}
+
+
+
+//	Address
+message AddressRequest {
+	int32 id = 1;
+	string location_name = 2;
+	string address1 = 3;
+	string address2 = 4;
+	string address3 = 5;
+	string address4 = 6;
+	int32 city_id = 7;
+	string city_name = 8;
+	string postal_code = 9;
+	string postal_code_additional = 10;
+	int32 region_id = 11;
+	int32 country_id = 12;
+	string description = 13;
+	bool is_default_billing = 14;
+	bool is_default_shipping = 15;
+	string contact_name = 16;
+	string email = 17;
+	string phone = 18;
+	google.protobuf.Struct additional_attributes = 19;
+}
+message Region {
+	int32 id = 1;
+	string name = 2;
+}
+message City {
+	int32 id = 1;
+	string name = 2;
+}
+message Address {
+	int32 id = 1;
+	//	Location
+	string display_value = 2;
+	Region region = 3;
+	City city = 4;
+	string address1 = 5;
+	string address2 = 6;
+	string address3 = 7;
+	string address4 = 8;
+	string phone = 9;
+	string postal_code = 10;
+	string postal_code_additional = 11;
+	string country_code = 12;
+	int32 country_id = 13;
+	bool is_default_shipping = 14;
+	bool is_default_billing = 15;
+	string contact_name = 16;
+	string email = 17;
+	string location_name = 19;
+	string description = 18;
+	string reference = 20;
+	google.protobuf.Struct additional_attributes = 21;
+}
+
+// Business Partner
+message CreateBusinessPartnerRequest {
+	string value = 1;
+	string tax_id = 2;
+	string duns = 3;
+	string naics = 4;
+	string name = 5;
+	string last_name = 6;
+	string description = 7;
+	int32 business_partner_group_id = 8;
+	//	Location
+	repeated AddressRequest addresses = 9;
+	google.protobuf.Struct additional_attributes = 10;
+	int32 display_definition_id = 11;
+}
+message UpdateBusinessPartnerRequest {
+	int32 id = 1;
+	string value = 2;
+	string tax_id = 3;
+	string duns = 4;
+	string naics = 5;
+	string name = 6;
+	string last_name = 7;
+	string description = 8;
+	//	Location
+	repeated AddressRequest addresses = 9;
+	google.protobuf.Struct additional_attributes = 10;
+	int32 display_definition_id = 11;
+}
+message GetBusinessPartnerRequest {
+	int32 id = 1;
+	int32 display_definition_id = 2;
+}
+message BusinessPartner {
+	int32 id = 1;
+	string uuid = 2;
+	string title = 3;
+	string description = 4;
+	bool is_active = 5;
+	bool is_read_only = 6;
+	google.protobuf.Struct fields = 7;
+	repeated Address addresses = 8;
+	google.protobuf.Struct additional_attributes = 9;
+}

@@ -1,0 +1,188 @@
+/************************************************************************************
+ * Copyright (C) 2018-present E.R.P. Consultores y Asociados, C.A.                  *
+ * Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com                     *
+ * This program is free software: you can redistribute it and/or modify             *
+ * it under the terms of the GNU General Public License as published by             *
+ * the Free Software Foundation, either version 2 of the License, or                *
+ * (at your option) any later version.                                              *
+ * This program is distributed in the hope that it will be useful,                  *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                   *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                     *
+ * GNU General Public License for more details.                                     *
+ * You should have received a copy of the GNU General Public License                *
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.            *
+ ************************************************************************************/
+syntax = "proto3";
+
+
+option java_multiple_files = true;
+option java_package = "org.spin.backend.grpc.user_customization";
+option java_outer_classname = "ADempiereUserCustomization";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+// Base URL
+// /user-customization/
+
+package user_customization;
+
+// The User Customization service definition.
+service UserCustomization {
+	rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {
+		option (google.api.http) = { get: "/user-customization/users" };
+	}
+	rpc ListRoles(ListRolesRequest) returns (ListRolesResponse) {
+		option (google.api.http) = { get: "/user-customization/roles" };
+	}
+	rpc ListCustomizationsLevel(ListCustomizationsLevelRequest) returns (ListCustomizationsLevelResponse) {
+		option (google.api.http) = { get: "/user-customization/levels" };
+	}
+	// User Customization
+	rpc SaveWindowCustomization(SaveWindowCustomizationRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = {
+			post: "/user-customization/windows/{tab_id}/{level_type}/{level_value}",
+			body: "*"
+		};
+	}
+	rpc SaveBrowseCustomization(SaveBrowseCustomizationRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = {
+			post: "/user-customization/browsers/{browse_id}/{level_type}/{level_value}",
+			body: "*"
+		};
+	}
+	rpc SaveProcessCustomization(SaveProcessCustomizationRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = {
+			post: "/user-customization/processes/{process_id}/{level_type}/{level_value}",
+			body: "*"
+		};
+	}
+}
+
+
+// User
+message User {
+	int32 id = 1;
+	string value = 2;
+	string name = 3;
+	string description = 4;
+}
+
+message ListUsersRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+}
+
+message ListUsersResponse {
+	int64 record_count = 1;
+	repeated User records = 2;
+	string next_page_token = 3;
+}
+
+
+// Role
+message Role {
+	int32 id = 1;
+	string value = 2;
+	string name = 3;
+	string description = 4;
+}
+
+message ListRolesRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+}
+
+message ListRolesResponse {
+	int64 record_count = 1;
+	repeated Role records = 2;
+	string next_page_token = 3;
+}
+
+
+// Level Customization
+message LevelCustomization {
+	int32 id = 1;
+	string value = 2;
+	string name = 3;
+	string description = 4;
+}
+
+message ListCustomizationsLevelRequest {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	string search_value = 7;
+}
+
+message ListCustomizationsLevelResponse {
+	int64 record_count = 1;
+	repeated LevelCustomization records = 2;
+	string next_page_token = 3;
+}
+
+enum LevelType {
+	UNKNOW = 0;
+	USER = 1;
+	ROLE = 2;
+	CLIENT = 3;
+}
+
+
+message FieldAttributes {
+	string filters = 1;
+	string sort_by = 2;
+	repeated string group_columns = 3;
+	repeated string select_columns = 4;
+	int32 page_size = 5;
+	string page_token = 6;
+	int32 id = 7;
+	string column_name = 8;
+	string color = 9;
+	int32 display_size = 10;
+	string display_component_type = 11;
+	string component_template_code = 12;
+	// panel sequence
+	int32 sequence_panel = 13;
+	string is_default_displayed_as_panel = 14;
+	// table sequence
+	int32 sequence_table = 15;
+	string is_default_displayed_as_table = 16;
+}
+
+
+message SaveWindowCustomizationRequest {
+	int32 tab_id = 1;
+	LevelType level_type = 2;
+	int32 level_value = 3;
+	repeated FieldAttributes field_attributes = 4;
+}
+
+
+message SaveBrowseCustomizationRequest {
+	int32 browse_id = 1;
+	LevelType level_type = 2;
+	int32 level_value = 3;
+	repeated FieldAttributes field_attributes = 4;
+}
+
+
+message SaveProcessCustomizationRequest {
+	int32 process_id = 1;
+	LevelType level_type = 2;
+	int32 level_value = 3;
+	repeated FieldAttributes field_attributes = 4;
+}

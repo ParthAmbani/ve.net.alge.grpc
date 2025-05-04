@@ -1,0 +1,261 @@
+/************************************************************************************
+ * Copyright (C) 2018-present E.R.P. Consultores y Asociados, C.A.                  *
+ * Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com                     *
+ * This program is free software: you can redistribute it and/or modify             *
+ * it under the terms of the GNU General Public License as published by             *
+ * the Free Software Foundation, either version 2 of the License, or                *
+ * (at your option) any later version.                                              *
+ * This program is distributed in the hope that it will be useful,                  *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                   *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                     *
+ * GNU General Public License for more details.                                     *
+ * You should have received a copy of the GNU General Public License                *
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.            *
+ ************************************************************************************/
+syntax = "proto3";
+
+
+option java_multiple_files = true;
+option java_package = "org.spin.backend.grpc.file_management";
+option java_outer_classname = "ADempiereFileManagement";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+// Base URL
+// /file-management/
+
+package file_management;
+
+// The File Management service definition.
+service FileManagement {
+	//	Resource/File
+	rpc LoadResource(stream LoadResourceRequest) returns (ResourceReference) {
+		option (google.api.http) = {
+			post: "/file-management/resources/{id}",
+			body: "*"
+		};
+	}
+	rpc GetResource(GetResourceRequest) returns (stream Resource) {
+		option (google.api.http) = {
+			get: "/file-management/resources/{id}"
+			additional_bindings: {
+				get: "/file-management/resources/file-name/{resource_name}"
+			}
+			additional_bindings: {
+				delete: "/file-management/resources/attachment/{attachment_id}/{file_name}"
+			}
+			additional_bindings: {
+				get: "/file-management/resources/image/{image_id}"
+			}
+			additional_bindings: {
+				get: "/file-management/resources/archive/{archive_id}"
+			}
+		};
+	}
+
+	//	Attachment
+	rpc SetAttachmentDescription(SetAttachmentDescriptionRequest) returns (Attachment) {
+		option (google.api.http) = {
+			put: "/file-management/attachments/{id}",
+			body: "*"
+		};
+	}
+	rpc ExistsAttachment(ExistsAttachmentRequest) returns (ExistsAttachmentResponse) {
+		option (google.api.http) = { get: "/file-management/attachments/{table_name}/{record_id}/exists" };
+	}
+	rpc GetAttachment(GetAttachmentRequest) returns (Attachment) {
+		option (google.api.http) = { get: "/file-management/attachments/{table_name}/{record_id}" };
+	}
+
+	//	Resource Reference
+	rpc SetResourceReference(SetResourceReferenceRequest) returns (ResourceReference) {
+		option (google.api.http) = {
+			put: "/file-management/references/attachment/{table_name}/{record_id}",
+			body: "*"
+			additional_bindings: {
+				put: "/file-management/references/image/{id}",
+				body: "*"
+			}
+			additional_bindings: {
+				put: "/file-management/references/archive/{id}",
+				body: "*"
+			}
+		};
+	}
+	rpc ConfirmResourceReference(ConfirmResourceReferenceRequest) returns (ResourceReference) {
+		option (google.api.http) = {
+			put: "/file-management/references/{id}/confirm",
+			body: "*"
+		};
+	}
+	rpc SetResourceReferenceDescription(SetResourceReferenceDescriptionRequest) returns (ResourceReference) {
+		option (google.api.http) = {
+			put: "/file-management/references/{id}/description",
+			body: "*"
+		};
+	}
+	rpc GetResourceReference(GetResourceReferenceRequest) returns (ResourceReference) {
+		option (google.api.http) = {
+			get: "/file-management/references/{id}"
+			additional_bindings: {
+				get: "/file-management/references/file-name/{resource_name}"
+			}
+			additional_bindings: {
+				delete: "/file-management/references/attachment/{attachment_id}/{file_name}"
+			}
+			additional_bindings: {
+				get: "/file-management/references/image/{image_id}"
+			}
+			additional_bindings: {
+				get: "/file-management/references/archive/{archive_id}"
+			}
+		};
+	}
+	rpc DeleteResourceReference(DeleteResourceReferenceRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = {
+			delete: "/file-management/references/{id}"
+			additional_bindings: {
+				delete: "/file-management/references/file-name/{resource_name}"
+			}
+			additional_bindings: {
+				delete: "/file-management/references/attachment/{attachment_id}/{file_name}"
+			}
+			additional_bindings: {
+				get: "/file-management/references/image/{image_id}"
+			}
+			additional_bindings: {
+				get: "/file-management/references/archive/{archive_id}"
+			}
+		};
+	}
+}
+
+// Resource Chunk
+message Resource {
+	bytes data = 1;
+}
+
+// Attachment
+message Attachment {
+	int32 id = 1;
+	string title = 2;
+	string text_message = 3;
+	repeated ResourceReference resource_references = 4;
+}
+
+enum ResourceType {
+	ATTACHMENT = 0; // Default
+	IMAGE = 1;
+	ARCHIVE = 2;
+}
+
+//	Resource reference
+message ResourceReference {
+	int32 id = 1;
+	string uuid = 2;
+	string name = 3;
+	string file_name = 4;
+	string valid_file_name = 5; // uuid + file_name
+	string file_size = 6;
+	string description = 7;
+	string text_message = 8;
+	string content_type = 9;
+	google.protobuf.Timestamp created = 10;
+	google.protobuf.Timestamp updated = 11;
+	ResourceType resource_type = 12;
+	int32 resource_id = 13; // attachment, image, archive
+}
+
+// Request for upload resource
+message LoadResourceRequest {
+	bytes data = 1;
+	int32 id = 2;
+	string file_size = 3;
+}
+
+enum Operation {
+	RESIZE = 0;
+	CROP = 1;
+	FIX = 2;
+	IDENTIFY = 3;
+}
+// Request for download resource
+message GetResourceRequest {
+	int32 id = 1;
+	string resource_name = 2;
+	// attachment
+	int32 attachment_id = 3;
+	string file_name = 4;
+	// image
+	int32 image_id = 6;
+	int64 width = 7;
+	int64 height = 8;
+	Operation operation = 9;
+	// archive
+	int32 archive_id = 5;
+}
+
+// Request for download resource reference
+message GetResourceReferenceRequest {
+	int32 id = 1;
+	string resource_name = 2;
+	int32 attachment_id = 3;
+	string file_name = 4;
+	int32 image_id = 5;
+	int32 archive_id = 6;
+}
+
+// Request attachment from table and record
+message GetAttachmentRequest {
+	string table_name = 1;
+	int32 record_id = 2;;
+}
+
+message SetAttachmentDescriptionRequest {
+	int32 id = 1;
+	string text_message = 2;
+}
+
+message SetResourceReferenceRequest {
+	ResourceType resource_type = 1;
+	int32 id = 2; // attachment, image, archive
+	string table_name = 3;
+	int32 record_id = 4;
+	string file_name = 5;
+	int32 file_size = 6;
+	string description = 7;
+	string text_message = 8;
+}
+
+message ConfirmResourceReferenceRequest {
+	int32 id = 1;
+	string file_size = 2;
+}
+
+message SetResourceReferenceDescriptionRequest {
+	int32 id = 1;
+	string file_name = 2;
+	string description = 3;
+	string text_message = 4;
+}
+
+message DeleteResourceReferenceRequest {
+	int32 id = 1;
+	string resource_name = 2;
+	int32 attachment_id = 3;
+	string fileName = 4;
+	int32 image_id = 5;
+	int32 archive_id = 6;
+	bool is_delete_external_file = 7; // delete external file with attachment util
+}
+
+message ExistsAttachmentRequest {
+	string table_name = 1;
+	int32 record_id = 2;
+}
+
+message ExistsAttachmentResponse {
+	int32 record_count = 1;
+}
