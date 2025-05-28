@@ -32,18 +32,20 @@ import java.util.stream.Collectors;
 import org.adempiere.model.MBrowse;
 import org.adempiere.model.MBrowseField;
 import org.adempiere.model.MView;
-
+import org.adempiere.model.MViewColumn;
 import org.compiere.model.MColumn;
 import org.compiere.model.MTab;
 import org.compiere.model.MTable;
-import org.adempiere.model.MViewColumn;
 import org.compiere.model.MWindow;
+import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
 import org.compiere.util.Util;
 import org.spin.service.grpc.util.db.FromUtil;
 import org.spin.service.grpc.util.db.OperatorUtil;
+import org.spin.service.grpc.util.db.ParameterUtil;
 import org.spin.service.grpc.util.query.Filter;
 import org.spin.service.grpc.util.query.FilterManager;
+import org.spin.service.grpc.util.value.StringManager;
 
 /**
  * Class for handle SQL Where Clause
@@ -270,152 +272,151 @@ public class WhereClauseUtil {
 	 * @return
 	 */
 	public static String getRestrictionByOperator(String tableAlias, Filter condition, int displayType, List<Object> parameters) {
-		return ""; // TODO core
-//		String operatorValue = OperatorUtil.EQUAL;
-//		if (!Util.isEmpty(condition.getOperator(), true)) {
-//			operatorValue = condition.getOperator().toLowerCase();
-//		}
-//		String sqlOperator = OperatorUtil.convertOperator(condition.getOperator());
-//
-//		String columnName = condition.getColumnName();
-//		if (!Util.isEmpty(tableAlias, true)) {
-//			columnName = tableAlias + "." + columnName;
-//		}
-//		String sqlValue = "";
-//		StringBuilder additionalSQL = new StringBuilder();
-//		//	For IN or NOT IN
-//		if (operatorValue.equals(OperatorUtil.IN) || operatorValue.equals(OperatorUtil.NOT_IN)) {
-//			StringBuilder parameterValues = new StringBuilder();
-//			final String baseColumnName = columnName;
-//			StringBuilder column_name = new StringBuilder(columnName);
-//
-//			if (condition.getValues() != null) {
-//				condition.getValues().forEach(currentValue -> {
-//					boolean isString = DisplayType.isText(displayType) || currentValue instanceof String;
-//
-//					if (currentValue == null || (isString && Util.isEmpty((String) currentValue, true))) {
-//						if (Util.isEmpty(additionalSQL.toString(), true)) {
-//							additionalSQL.append("(SELECT " + baseColumnName + " WHERE " + baseColumnName + " IS NULL)");
-//						}
-//						if (isString) {
-//							currentValue = "";
-//						} else {
-//							// does not add the null value to the filters, another restriction is
-//							// added only for null values `additionalSQL`.
-//							return;
-//						}
-//					}
-//					if (parameterValues.length() > 0) {
-//						parameterValues.append(", ");
-//					}
-//					String sqlInValue = "?";
-//					if (isString) {
-//						column_name.delete(0, column_name.length());
-//						column_name.append("UPPER(").append(baseColumnName).append(")");
-//						sqlInValue = "UPPER(?)";
-//					}
-//					parameterValues.append(sqlInValue);
-//
-//					Object valueToFilter = ParameterUtil.getValueToFilterRestriction(
-//						displayType,
-//						currentValue
-//					);
-//					parameters.add(valueToFilter);
-//				});
-//			}
-//
-//			columnName = column_name.toString();
-//			if (!Util.isEmpty(parameterValues.toString(), true)) {
-//				sqlValue = "(" + parameterValues.toString() + ")";
-//				if (!Util.isEmpty(additionalSQL.toString(), true)) {
-//					additionalSQL.insert(0, " OR " + columnName + sqlOperator);
-//				}
-//			}
-//		} else if(operatorValue.equals(OperatorUtil.BETWEEN) || operatorValue.equals(OperatorUtil.NOT_BETWEEN)) {
-//			// List<Object> values = condition.getValues();
-//			Object valueStartToFilter = ParameterUtil.getValueToFilterRestriction(
-//				displayType,
-//				condition.getFromValue()
-//			);
-//			Object valueEndToFilter = ParameterUtil.getValueToFilterRestriction(
-//				displayType,
-//				condition.getToValue()
-//			);
-//
-//			sqlValue = "";
-//			if (valueStartToFilter == null) {
-//				sqlValue = " ? ";
-//				sqlOperator = OperatorUtil.convertOperator(OperatorUtil.LESS_EQUAL);
-//				parameters.add(valueEndToFilter);
-//			} else if (valueEndToFilter == null) {
-//				sqlValue = " ? ";
-//				sqlOperator = OperatorUtil.convertOperator(OperatorUtil.GREATER_EQUAL);
-//				parameters.add(valueStartToFilter);
-//			} else {
-//				sqlValue = " ? AND ? ";
-//				parameters.add(valueStartToFilter);
-//				parameters.add(valueEndToFilter);
-//			}
-//		} else if(operatorValue.equals(OperatorUtil.LIKE) || operatorValue.equals(OperatorUtil.NOT_LIKE)) {
-//			columnName = "UPPER(" + columnName + ")";
-//			String valueToFilter = StringManager.getValidString(
-//				StringManager.getStringFromObject(
-//					condition.getValue()
-//				)
-//			);
-//			// if (!Util.isEmpty(valueToFilter, true)) {
-//			// 	if (!valueToFilter.startsWith("%")) {
-//			// 		valueToFilter = "%" + valueToFilter;
-//			// 	}
-//			// 	if (!valueToFilter.endsWith("%")) {
-//			// 		valueToFilter += "%";
-//			// 	}
-//			// }
-//			// valueToFilter = "UPPPER(" + valueToFilter + ")";
-//			sqlValue = "'%' || UPPER(?) || '%'";
-//			parameters.add(valueToFilter);
-//		} else if(operatorValue.equals(OperatorUtil.NULL) || operatorValue.equals(OperatorUtil.NOT_NULL)) {
-//			;
-//		} else if (operatorValue.equals(OperatorUtil.EQUAL) || operatorValue.equals(OperatorUtil.NOT_EQUAL)) {
-//			Object parameterValue = condition.getValue();
-//			sqlValue = " ? ";
-//
-//			boolean isString = DisplayType.isText(displayType);
-//			boolean isEmptyString = isString && Util.isEmpty((String) parameterValue, true);
-//			if (isString) {
-//				if (isEmptyString) {
-//					parameterValue = "";
-//				} else {
-//					columnName = "UPPER(" + columnName + ")";
-//					sqlValue = "UPPER(?)";
-//				}
-//			}
-//			if (parameterValue == null || isEmptyString) {
-//				additionalSQL.append(" OR ")
-//					.append(columnName)
-//					.append(" IS NULL ")
-//				;
-//			}
-//
-//			Object valueToFilter = ParameterUtil.getValueToFilterRestriction(
-//				displayType,
-//				parameterValue
-//			);
-//			parameters.add(valueToFilter);
-//		} else {
-//			// Greater, Greater Equal, Less, Less Equal
-//			sqlValue = " ? ";
-//
-//			Object valueToFilter = ParameterUtil.getValueToFilterRestriction(
-//				displayType,
-//				condition.getValue()
-//			);
-//			parameters.add(valueToFilter);
-//		}
-//
-//		String rescriction = "(" + columnName + sqlOperator + sqlValue + additionalSQL.toString() + ")";
-//
-//		return rescriction;
+		String operatorValue = OperatorUtil.EQUAL;
+		if (!Util.isEmpty(condition.getOperator(), true)) {
+			operatorValue = condition.getOperator().toLowerCase();
+		}
+		String sqlOperator = OperatorUtil.convertOperator(condition.getOperator());
+
+		String columnName = condition.getColumnName();
+		if (!Util.isEmpty(tableAlias, true)) {
+			columnName = tableAlias + "." + columnName;
+		}
+		String sqlValue = "";
+		StringBuilder additionalSQL = new StringBuilder();
+		//	For IN or NOT IN
+		if (operatorValue.equals(OperatorUtil.IN) || operatorValue.equals(OperatorUtil.NOT_IN)) {
+			StringBuilder parameterValues = new StringBuilder();
+			final String baseColumnName = columnName;
+			StringBuilder column_name = new StringBuilder(columnName);
+
+			if (condition.getValues() != null) {
+				condition.getValues().forEach(currentValue -> {
+					boolean isString = DisplayType.isText(displayType) || currentValue instanceof String;
+
+					if (currentValue == null || (isString && Util.isEmpty((String) currentValue, true))) {
+						if (Util.isEmpty(additionalSQL.toString(), true)) {
+							additionalSQL.append("(SELECT " + baseColumnName + " WHERE " + baseColumnName + " IS NULL)");
+						}
+						if (isString) {
+							currentValue = "";
+						} else {
+							// does not add the null value to the filters, another restriction is
+							// added only for null values `additionalSQL`.
+							return;
+						}
+					}
+					if (parameterValues.length() > 0) {
+						parameterValues.append(", ");
+					}
+					String sqlInValue = "?";
+					if (isString) {
+						column_name.delete(0, column_name.length());
+						column_name.append("UPPER(").append(baseColumnName).append(")");
+						sqlInValue = "UPPER(?)";
+					}
+					parameterValues.append(sqlInValue);
+
+					Object valueToFilter = ParameterUtil.getValueToFilterRestriction(
+						displayType,
+						currentValue
+					);
+					parameters.add(valueToFilter);
+				});
+			}
+
+			columnName = column_name.toString();
+			if (!Util.isEmpty(parameterValues.toString(), true)) {
+				sqlValue = "(" + parameterValues.toString() + ")";
+				if (!Util.isEmpty(additionalSQL.toString(), true)) {
+					additionalSQL.insert(0, " OR " + columnName + sqlOperator);
+				}
+			}
+		} else if(operatorValue.equals(OperatorUtil.BETWEEN) || operatorValue.equals(OperatorUtil.NOT_BETWEEN)) {
+			// List<Object> values = condition.getValues();
+			Object valueStartToFilter = ParameterUtil.getValueToFilterRestriction(
+				displayType,
+				condition.getFromValue()
+			);
+			Object valueEndToFilter = ParameterUtil.getValueToFilterRestriction(
+				displayType,
+				condition.getToValue()
+			);
+
+			sqlValue = "";
+			if (valueStartToFilter == null) {
+				sqlValue = " ? ";
+				sqlOperator = OperatorUtil.convertOperator(OperatorUtil.LESS_EQUAL);
+				parameters.add(valueEndToFilter);
+			} else if (valueEndToFilter == null) {
+				sqlValue = " ? ";
+				sqlOperator = OperatorUtil.convertOperator(OperatorUtil.GREATER_EQUAL);
+				parameters.add(valueStartToFilter);
+			} else {
+				sqlValue = " ? AND ? ";
+				parameters.add(valueStartToFilter);
+				parameters.add(valueEndToFilter);
+			}
+		} else if(operatorValue.equals(OperatorUtil.LIKE) || operatorValue.equals(OperatorUtil.NOT_LIKE)) {
+			columnName = "UPPER(" + columnName + ")";
+			String valueToFilter = StringManager.getValidString(
+				StringManager.getStringFromObject(
+					condition.getValue()
+				)
+			);
+			// if (!Util.isEmpty(valueToFilter, true)) {
+			// 	if (!valueToFilter.startsWith("%")) {
+			// 		valueToFilter = "%" + valueToFilter;
+			// 	}
+			// 	if (!valueToFilter.endsWith("%")) {
+			// 		valueToFilter += "%";
+			// 	}
+			// }
+			// valueToFilter = "UPPPER(" + valueToFilter + ")";
+			sqlValue = "'%' || UPPER(?) || '%'";
+			parameters.add(valueToFilter);
+		} else if(operatorValue.equals(OperatorUtil.NULL) || operatorValue.equals(OperatorUtil.NOT_NULL)) {
+			;
+		} else if (operatorValue.equals(OperatorUtil.EQUAL) || operatorValue.equals(OperatorUtil.NOT_EQUAL)) {
+			Object parameterValue = condition.getValue();
+			sqlValue = " ? ";
+
+			boolean isString = DisplayType.isText(displayType);
+			boolean isEmptyString = isString && Util.isEmpty((String) parameterValue, true);
+			if (isString) {
+				if (isEmptyString) {
+					parameterValue = "";
+				} else {
+					columnName = "UPPER(" + columnName + ")";
+					sqlValue = "UPPER(?)";
+				}
+			}
+			if (parameterValue == null || isEmptyString) {
+				additionalSQL.append(" OR ")
+					.append(columnName)
+					.append(" IS NULL ")
+				;
+			}
+
+			Object valueToFilter = ParameterUtil.getValueToFilterRestriction(
+				displayType,
+				parameterValue
+			);
+			parameters.add(valueToFilter);
+		} else {
+			// Greater, Greater Equal, Less, Less Equal
+			sqlValue = " ? ";
+
+			Object valueToFilter = ParameterUtil.getValueToFilterRestriction(
+				displayType,
+				condition.getValue()
+			);
+			parameters.add(valueToFilter);
+		}
+
+		String rescriction = "(" + columnName + sqlOperator + sqlValue + additionalSQL.toString() + ")";
+
+		return rescriction;
 	}
 
 

@@ -59,6 +59,7 @@ public class Activator implements BundleActivator {
 
 	@Override
 	public void start(BundleContext context) throws Exception {
+		// 
 		ServerBuilder<?> serverBuilder = ServerBuilder.forPort(50051);
 		serverBuilder.addService(new BankStatementMatch());
 		logger.info("Service " + BankStatementMatch.class.getName());

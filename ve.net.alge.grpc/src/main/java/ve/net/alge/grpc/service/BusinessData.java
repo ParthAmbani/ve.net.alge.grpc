@@ -506,7 +506,7 @@ public class BusinessData extends BusinessDataImplBase {
 			entity = RecordUtil.getEntity(Env.getCtx(), tableName, request.getId(), null);
 		} else if(request.getFilters() != null) {
 			List<Object> parameters = new ArrayList<Object>();
-			String whereClause = WhereClauseUtil.getWhereClauseFromCriteria(request.getFilters(), parameters);
+			String whereClause = WhereClauseUtil.getWhereClauseFromCriteria(request.getFilters(), tableName, parameters);
 			entity = RecordUtil.getEntity(Env.getCtx(), tableName, whereClause, parameters, null);
 		}
 		//	Return
