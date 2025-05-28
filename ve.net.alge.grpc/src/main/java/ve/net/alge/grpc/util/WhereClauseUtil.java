@@ -443,159 +443,147 @@ public class WhereClauseUtil {
 	 * @return
 	 */
 	public static String getRestrictionByOperatorWithoutParameters(String tableAlias, Filter condition, int displayType) {
-		return "";
-		// TODO core
-//		String sqlOperator = OperatorUtil.convertOperator(condition.getOperator());
-//
-//		String columnName = condition.getColumnName();
-//		if (!Util.isEmpty(tableAlias, true)) {
-//			columnName = tableAlias + "." + columnName;
-//		}
-//
-//		String operatorValue = condition.getOperator();
-//		String sqlValue = "";
-//		StringBuilder additionalSQL = new StringBuilder();
-//		//	For IN or NOT IN
-//		if (operatorValue.equals(OperatorUtil.IN) || operatorValue.equals(OperatorUtil.NOT_IN)) {
-//			StringBuilder parameterValues = new StringBuilder();
-//			final String baseColumnName = columnName;
-//			StringBuilder column_name = new StringBuilder(columnName);
-//
-//			condition.getValues().forEach(currentValue -> {
-//				boolean isString = DisplayType.isText(displayType) || currentValue instanceof String;
-//
-//				if (currentValue == null || (isString && Util.isEmpty((String) currentValue, true))) {
-//					if (Util.isEmpty(additionalSQL.toString(), true)) {
-//						additionalSQL.append("(SELECT " + baseColumnName + " WHERE " + baseColumnName + " IS NULL)");
-//					}
-//					if (isString) {
-//						currentValue = "";
-//					} else {
-//						// does not add the null value to the filters, another restriction is
-//						// added only for null values `additionalSQL`.
-//						return;
-//					}
-//				}
-//				if (parameterValues.length() > 0) {
-//					parameterValues.append(", ");
-//				}
-//
-//				Object valueToFilter = ParameterUtil.getValueToFilterRestriction(
-//					displayType,
-//					currentValue
-//				);
-//				String dbValue = ParameterUtil.getDBValue(
-//					valueToFilter,
-//					displayType
-//				);
-//				String sqlInValue = dbValue;
-//				if (isString) {
-//					column_name.delete(0, column_name.length());
-//					column_name.append("UPPER(").append(baseColumnName).append(")");
-//					sqlInValue = "UPPER(" + dbValue + ")";
-//				}
-//				parameterValues.append(sqlInValue);
-//			});
-//
-//			columnName = column_name.toString();
-//			if (!Util.isEmpty(parameterValues.toString(), true)) {
-//				sqlValue = "(" + parameterValues.toString() + ")";
-//				if (!Util.isEmpty(additionalSQL.toString(), true)) {
-//					additionalSQL.insert(0, " OR " + columnName + sqlOperator);
-//				}
-//			}
-//		} else if(operatorValue.equals(OperatorUtil.BETWEEN) || operatorValue.equals(OperatorUtil.NOT_BETWEEN)) {
-//			Object valueStartToFilter = ParameterUtil.getValueToFilterRestriction(
-//				displayType,
-//				condition.getFromValue()
-//			);
-//			Object valueEndToFilter = ParameterUtil.getValueToFilterRestriction(
-//				displayType,
-//				condition.getToValue()
-//			);
-//
-//			String dbValueStart = ParameterUtil.getDBValue(valueStartToFilter, displayType);
-//			String dbValueEnd = ParameterUtil.getDBValue(valueEndToFilter, displayType);
-//
-//			sqlValue = "";
-//			if (valueStartToFilter == null) {
-//				sqlValue = dbValueEnd;
-//				sqlOperator = OperatorUtil.convertOperator(OperatorUtil.LESS_EQUAL);
-//			} else if (valueEndToFilter == null) {
-//				sqlValue = dbValueStart;
-//				sqlOperator = OperatorUtil.convertOperator(OperatorUtil.GREATER_EQUAL);
-//			} else {
-//				sqlValue = dbValueStart + " AND " + dbValueEnd;
-//			}
-//		} else if(operatorValue.equals(OperatorUtil.LIKE) || operatorValue.equals(OperatorUtil.NOT_LIKE)) {
-//			Object valueToFilter = ParameterUtil.getValueToFilterRestriction(
-//				displayType,
-//				condition.getValue()
-//			);
-//			String dbValue = ParameterUtil.getDBValue(
-//				valueToFilter,
-//				displayType
-//			);
-//
-//			columnName = "UPPER(" + columnName + ")";
-//			sqlValue = "'%' || UPPER(" + dbValue + ") || '%'";
-//		} else if(operatorValue.equals(OperatorUtil.NULL) || operatorValue.equals(OperatorUtil.NOT_NULL)) {
-//			;
-//		} else if (operatorValue.equals(OperatorUtil.EQUAL) || operatorValue.equals(OperatorUtil.NOT_EQUAL)) {
-//			Object valueToFilter = ParameterUtil.getValueToFilterRestriction(
-//				displayType,
-//				condition.getValue()
-//			);
-//
-//			String dbValue = ParameterUtil.getDBValue(
-//				valueToFilter,
-//				displayType
-//			);
-//			sqlValue = dbValue;
-//
-//			boolean isString = DisplayType.isText(displayType) || valueToFilter instanceof String;
-//			boolean isEmptyString = isString && Util.isEmpty((String) valueToFilter, true);
-//			if (isString) {
-//				if (isEmptyString) {
-//					valueToFilter = "";
-//				} else {
-//					columnName = "UPPER(" + columnName + ")";
-//					sqlValue = "UPPER(" + dbValue + ")";
-//				}
-//			}
-//			if (valueToFilter == null || isEmptyString) {
-//				additionalSQL.append(" OR ")
-//					.append(columnName)
-//					.append(" IS NULL ")
-//				;
-//			}
-//		} else {
-//			// Greater, Greater Equal, Less, Less Equal
-//			Object valueToFilter = ParameterUtil.getValueToFilterRestriction(
-//				displayType,
-//				condition.getValue()
-//			);
-//			sqlValue = ParameterUtil.getDBValue(
-//				valueToFilter,
-//				displayType
-//			);
-//		}
-//
-//		String rescriction = "(" + columnName + sqlOperator + sqlValue + additionalSQL.toString() + ")";
-//
-//		return rescriction;
+		String sqlOperator = OperatorUtil.convertOperator(condition.getOperator());
+
+		String columnName = condition.getColumnName();
+		if (!Util.isEmpty(tableAlias, true)) {
+			columnName = tableAlias + "." + columnName;
+		}
+
+		String operatorValue = condition.getOperator();
+		String sqlValue = "";
+		StringBuilder additionalSQL = new StringBuilder();
+		//	For IN or NOT IN
+		if (operatorValue.equals(OperatorUtil.IN) || operatorValue.equals(OperatorUtil.NOT_IN)) {
+			StringBuilder parameterValues = new StringBuilder();
+			final String baseColumnName = columnName;
+			StringBuilder column_name = new StringBuilder(columnName);
+
+			condition.getValues().forEach(currentValue -> {
+				boolean isString = DisplayType.isText(displayType) || currentValue instanceof String;
+
+				if (currentValue == null || (isString && Util.isEmpty((String) currentValue, true))) {
+					if (Util.isEmpty(additionalSQL.toString(), true)) {
+						additionalSQL.append("(SELECT " + baseColumnName + " WHERE " + baseColumnName + " IS NULL)");
+					}
+					if (isString) {
+						currentValue = "";
+					} else {
+						// does not add the null value to the filters, another restriction is
+						// added only for null values `additionalSQL`.
+						return;
+					}
+				}
+				if (parameterValues.length() > 0) {
+					parameterValues.append(", ");
+				}
+
+				Object valueToFilter = ParameterUtil.getValueToFilterRestriction(
+					displayType,
+					currentValue
+				);
+				String dbValue = ParameterUtil.getDBValue(
+					valueToFilter,
+					displayType
+				);
+				String sqlInValue = dbValue;
+				if (isString) {
+					column_name.delete(0, column_name.length());
+					column_name.append("UPPER(").append(baseColumnName).append(")");
+					sqlInValue = "UPPER(" + dbValue + ")";
+				}
+				parameterValues.append(sqlInValue);
+			});
+
+			columnName = column_name.toString();
+			if (!Util.isEmpty(parameterValues.toString(), true)) {
+				sqlValue = "(" + parameterValues.toString() + ")";
+				if (!Util.isEmpty(additionalSQL.toString(), true)) {
+					additionalSQL.insert(0, " OR " + columnName + sqlOperator);
+				}
+			}
+		} else if(operatorValue.equals(OperatorUtil.BETWEEN) || operatorValue.equals(OperatorUtil.NOT_BETWEEN)) {
+			Object valueStartToFilter = ParameterUtil.getValueToFilterRestriction(
+				displayType,
+				condition.getFromValue()
+			);
+			Object valueEndToFilter = ParameterUtil.getValueToFilterRestriction(
+				displayType,
+				condition.getToValue()
+			);
+
+			String dbValueStart = ParameterUtil.getDBValue(valueStartToFilter, displayType);
+			String dbValueEnd = ParameterUtil.getDBValue(valueEndToFilter, displayType);
+
+			sqlValue = "";
+			if (valueStartToFilter == null) {
+				sqlValue = dbValueEnd;
+				sqlOperator = OperatorUtil.convertOperator(OperatorUtil.LESS_EQUAL);
+			} else if (valueEndToFilter == null) {
+				sqlValue = dbValueStart;
+				sqlOperator = OperatorUtil.convertOperator(OperatorUtil.GREATER_EQUAL);
+			} else {
+				sqlValue = dbValueStart + " AND " + dbValueEnd;
+			}
+		} else if(operatorValue.equals(OperatorUtil.LIKE) || operatorValue.equals(OperatorUtil.NOT_LIKE)) {
+			Object valueToFilter = ParameterUtil.getValueToFilterRestriction(
+				displayType,
+				condition.getValue()
+			);
+			String dbValue = ParameterUtil.getDBValue(
+				valueToFilter,
+				displayType
+			);
+
+			columnName = "UPPER(" + columnName + ")";
+			sqlValue = "'%' || UPPER(" + dbValue + ") || '%'";
+		} else if(operatorValue.equals(OperatorUtil.NULL) || operatorValue.equals(OperatorUtil.NOT_NULL)) {
+			;
+		} else if (operatorValue.equals(OperatorUtil.EQUAL) || operatorValue.equals(OperatorUtil.NOT_EQUAL)) {
+			Object valueToFilter = ParameterUtil.getValueToFilterRestriction(
+				displayType,
+				condition.getValue()
+			);
+
+			String dbValue = ParameterUtil.getDBValue(
+				valueToFilter,
+				displayType
+			);
+			sqlValue = dbValue;
+
+			boolean isString = DisplayType.isText(displayType) || valueToFilter instanceof String;
+			boolean isEmptyString = isString && Util.isEmpty((String) valueToFilter, true);
+			if (isString) {
+				if (isEmptyString) {
+					valueToFilter = "";
+				} else {
+					columnName = "UPPER(" + columnName + ")";
+					sqlValue = "UPPER(" + dbValue + ")";
+				}
+			}
+			if (valueToFilter == null || isEmptyString) {
+				additionalSQL.append(" OR ")
+					.append(columnName)
+					.append(" IS NULL ")
+				;
+			}
+		} else {
+			// Greater, Greater Equal, Less, Less Equal
+			Object valueToFilter = ParameterUtil.getValueToFilterRestriction(
+				displayType,
+				condition.getValue()
+			);
+			sqlValue = ParameterUtil.getDBValue(
+				valueToFilter,
+				displayType
+			);
+		}
+
+		String rescriction = "(" + columnName + sqlOperator + sqlValue + additionalSQL.toString() + ")";
+
+		return rescriction;
 	}
 
-
-	/**
-	 * Get Where Clause from criteria and dynamic condition
-	 * @param {Criteria} criteria
-	 * @param {List<Object>} params
-	 * @return
-	 */
-	public static String getWhereClauseFromCriteria(String filters, List<Object> params) {
-		return getWhereClauseFromCriteria(filters, null, params);
-	}
 
 	/**
 	 * Get Where Clause from criteria and dynamic condition

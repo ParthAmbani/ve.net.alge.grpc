@@ -33,6 +33,7 @@ import org.compiere.model.MBPBankAccount;
 import org.compiere.model.MBPartner;
 import org.compiere.model.MChatEntry;
 import org.compiere.model.MClient;
+import org.compiere.model.MColumn;
 import org.compiere.model.MConversionRate;
 import org.compiere.model.MConversionType;
 import org.compiere.model.MCurrency;
@@ -47,6 +48,7 @@ import org.compiere.model.MPayment;
 import org.compiere.model.MPriceList;
 import org.compiere.model.MProduct;
 import org.compiere.model.MRefList;
+import org.compiere.model.MRefTable;
 import org.compiere.model.MStorage;
 import org.compiere.model.MTable;
 import org.compiere.model.MTax;
@@ -239,28 +241,27 @@ public class ConvertUtil {
 			rowValues.putFields(columnName, builderValue.build());
 
 			// add display value
-			// TODO core
 			if (value != null) {
 				String displayValue = null;
 				if (columnName.equals(poInfo.getTableName() + "_ID")) {
 					displayValue = POUtils.getDisplayValue(entity);
 				} else if (ReferenceUtil.validateReference(displayTypeId) || displayTypeId == DisplayType.Button) {
-//					int referenceValueId = poInfo.getColumnReferenceValueId(index);// TODO core
-//					displayTypeId = ReferenceUtil.overwriteDisplayType(
-//						displayTypeId,
-//						referenceValueId
-//					);
+					int referenceValueId = MColumn.get(Env.getCtx(), poInfo.getTableName(), columnName).getAD_Reference_Value_ID();
+					displayTypeId = ReferenceUtil.overwriteDisplayType(
+						displayTypeId,
+						referenceValueId
+					);
 					String tableName = null;
-//					if(displayTypeId == DisplayType.TableDir) {
-//						tableName = columnName.replace("_ID", "");
-//					} else if(displayTypeId == DisplayType.Table || displayTypeId == DisplayType.Search) {
-//						if(referenceValueId <= 0) {
-//							tableName = columnName.replace("_ID", "");
-//						} else {
-//							MRefTable referenceTable = MRefTable.get(Env.getCtx(), referenceValueId);
-//							tableName = MTable.getTableName(Env.getCtx(), referenceTable.getAD_Table_ID());
-//						}
-//					}
+					if(displayTypeId == DisplayType.TableDir) {
+						tableName = columnName.replace("_ID", "");
+					} else if(displayTypeId == DisplayType.Table || displayTypeId == DisplayType.Search) {
+						if(referenceValueId <= 0) {
+							tableName = columnName.replace("_ID", "");
+						} else {
+							MRefTable referenceTable = MRefTable.get(Env.getCtx(), referenceValueId);
+							tableName = MTable.getTableName(Env.getCtx(), referenceTable.getAD_Table_ID());
+						}
+					}
 					if (!Util.isEmpty(tableName, true)) {
 						int id = NumberManager.getIntegerFromObject(value);
 						MTable referenceTable = MTable.get(Env.getCtx(), tableName);

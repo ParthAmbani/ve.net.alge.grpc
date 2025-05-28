@@ -679,7 +679,7 @@ public class BusinessData extends BusinessDataImplBase {
 		StringBuffer whereClause = new StringBuffer();
 		List<Object> params = new ArrayList<>();
 		//	For dynamic condition
-		String dynamicWhere = WhereClauseUtil.getWhereClauseFromCriteria(request.getFilters(), params);
+		String dynamicWhere = WhereClauseUtil.getWhereClauseFromCriteria(request.getFilters(), request.getTableName(), params);
 		if(!Util.isEmpty(dynamicWhere)) {
 			if(whereClause.length() > 0) {
 				whereClause.append(" AND ");
