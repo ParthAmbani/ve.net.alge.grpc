@@ -210,7 +210,7 @@ message GetResourceReferenceRequest {
 // Request attachment from table and record
 message GetAttachmentRequest {
 	string table_name = 1;
-	int32 record_id = 2;;
+	int32 record_id = 2;
 }
 
 message SetAttachmentDescriptionRequest {
